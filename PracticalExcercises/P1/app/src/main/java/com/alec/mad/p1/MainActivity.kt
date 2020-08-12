@@ -7,34 +7,37 @@ import android.widget.EditText
 import android.widget.TextView
 
 class MainActivity : AppCompatActivity() {
-    private val num1Button: EditText = findViewById(R.id.num1)
-    private val num2Button: EditText = findViewById(R.id.num2)
+    private lateinit var num1Button: EditText
+    private lateinit var num2Button: EditText
 
-    private val add: Button = findViewById(R.id.add)
-    private val subtract: Button = findViewById(R.id.subtract)
-    private val multiply: Button = findViewById(R.id.multiply)
-    private val divide: Button = findViewById(R.id.divide)
-
-    private val result: TextView = findViewById(R.id.result)
-
-    private val num1: Double?
-        get() = num1Button.text.toString().toDoubleOrNull()
-    private val num2: Double?
-        get() = num2Button.text.toString().toDoubleOrNull()
+    private lateinit var result: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        add.setOnClickListener { this.computeResult { n1, n2 -> n1 + n2 } }
-        subtract.setOnClickListener { this.computeResult { n1, n2 -> n1 - n2 } }
-        multiply.setOnClickListener { this.computeResult { n1, n2 -> n1 * n2 } }
-        divide.setOnClickListener { this.computeResult { n1, n2 -> n1 / n2 } }
+        num1Button = findViewById(R.id.num1Text)
+        num2Button = findViewById(R.id.num2Text)
+
+        val add: Button = findViewById(R.id.add)
+        add.setOperation { n1, n2 -> n1 + n2 }
+        val subtract: Button = findViewById(R.id.subtract)
+        subtract.setOperation { n1, n2 -> n1 - n2 }
+        val multiply: Button = findViewById(R.id.multiply)
+        multiply.setOperation { n1, n2 -> n1 * n2 }
+        val divide: Button = findViewById(R.id.divide)
+        divide.setOperation { n1, n2 -> n1 / n2 }
+
+        result = findViewById(R.id.result)
     }
 
-    private fun computeResult(operator: (Double, Double) -> Double) {
-        result.text =
-            if (num1 == null || num2 == null) "Error"
-            else operator(num1!!, num2!!).toString()
+    private fun Button.setOperation(operator: (Double, Double) -> Double) {
+        this.setOnClickListener {
+            val num1 = num1Button.text.toString().toDoubleOrNull()
+            val num2 = num2Button.text.toString().toDoubleOrNull()
+            result.text =
+                if (num1 == null || num2 == null) "Error (Not a number)"
+                else operator(num1, num2).toString()
+        }
     }
 }
