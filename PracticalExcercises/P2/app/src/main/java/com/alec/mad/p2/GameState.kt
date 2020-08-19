@@ -9,7 +9,8 @@ object GameState {
     private const val GAME_MAP_SIZE_Y = 10
     private const val AREA_ITEM_LIST_MIN = 2
     private const val AREA_ITEM_LIST_MAX = 8
-    private val STARTING_LOCATION = Player.Location(4, 4)
+    private const val STARTING_LOC_X = 4
+    private const val STARTING_LOC_Y = 4
 
     var gameMap: GameMap = newGameMap()
     var player: Player = newPlayer()
@@ -25,33 +26,28 @@ object GameState {
     /**
      * Creates a new player with starting location, cash and health.
      */
-    private fun newPlayer(): Player {
-        return Player(STARTING_LOCATION, STARTING_CASH, STARTING_HEALTH)
-    }
+    private fun newPlayer(): Player = Player(
+        STARTING_LOC_X, STARTING_LOC_Y, STARTING_CASH, STARTING_HEALTH)
 
     /**
      * Creates a new game map of dimensions GAME_MAP_SIZE_X by GAME_MAP_SIZE_Y with randomly
      * generated Area tiles.
      */
-    private fun newGameMap(): GameMap {
-        return GameMap(Array(GAME_MAP_SIZE_X) { Array(GAME_MAP_SIZE_Y)
-        {
-            Area(
-                Area.AreaType.values()[Random.nextInt(0, Area.AreaType.values().size)],
-                newItemList()
-            )
-        }} )
-    }
+    private fun newGameMap(): GameMap = GameMap(GAME_MAP_SIZE_X) { Array(GAME_MAP_SIZE_Y) {
+        Area(
+            Area.AreaType.values()[Random.nextInt(0, Area.AreaType.values().size)],
+            newItemList()
+        )
+    }}
 
     /**
      * Creates a new list of Items of size between AREA_ITEM_LIST_MIN and AREA_ITEM_LIST_MAX and
      * initialises with items from ItemLibrary.
      */
-    private fun newItemList(): List<Item> {
-        return List(Random.nextInt(AREA_ITEM_LIST_MIN, AREA_ITEM_LIST_MAX)) {
+    private fun newItemList(): List<Item> =
+        List(Random.nextInt(AREA_ITEM_LIST_MIN, AREA_ITEM_LIST_MAX)) {
             ItemLibrary.randomItem
         }
-    }
 
     object ItemLibrary {
         val randomItem: Item

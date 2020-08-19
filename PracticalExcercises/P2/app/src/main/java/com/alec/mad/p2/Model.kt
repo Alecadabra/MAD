@@ -6,12 +6,10 @@ class Food(description: String, value: Int, val health: Float) : Item(descriptio
 
 class Equipment(description: String, value: Int, val mass: Float) : Item(description, value)
 
-class Player(val location: Location, val cash: Int, val health: Float) {
+class Player(var xLoc: Int, var yLoc: Int, val cash: Int, var health: Float) {
     val equipment : MutableList<Equipment> = mutableListOf()
     val equipmentMass: Float
         get() = equipment.map { it.mass }.sum()
-
-    data class Location(var x: Int, var y: Int)
 }
 
 class Area(val type: AreaType, val items: List<Item> = mutableListOf()) {
@@ -21,8 +19,6 @@ class Area(val type: AreaType, val items: List<Item> = mutableListOf()) {
     }
 }
 
-class GameMap(val grid: Array<Array<Area>>) {
-    operator fun get(location: Player.Location): Area {
-        return grid[location.x][location.y]
-    }
-}
+typealias GameMap = Array<Array<Area>>
+
+operator fun GameMap.get(player: Player) = this[player.xLoc][player.yLoc]
