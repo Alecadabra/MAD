@@ -44,8 +44,8 @@ object GameState {
      * Creates a new list of Items of size between AREA_ITEM_LIST_MIN and AREA_ITEM_LIST_MAX and
      * initialises with items from ItemLibrary.
      */
-    private fun newItemList(): List<Item> =
-        List(Random.nextInt(AREA_ITEM_LIST_MIN, AREA_ITEM_LIST_MAX)) {
+    private fun newItemList(): MutableList<Item> =
+        MutableList(Random.nextInt(AREA_ITEM_LIST_MIN, AREA_ITEM_LIST_MAX)) {
             ItemLibrary.randomItem
         }
 
