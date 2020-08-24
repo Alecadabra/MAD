@@ -1,8 +1,10 @@
 package com.alec.mad.p2
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_main.*
@@ -13,10 +15,6 @@ class NavigationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        startGame()
-    }
-
-    private fun startGame() {
         north.setOnClickListener { move(Bearing.NORTH) }
         south.setOnClickListener { move(Bearing.SOUTH) }
         east.setOnClickListener { move(Bearing.EAST) }
@@ -30,19 +28,30 @@ class NavigationActivity : AppCompatActivity() {
         updateText()
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        // Nobody wants your null intents
+        if (data == null) return
+
+        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_SHOP_ACTIVITY)
+            if (ShopActivity.areTheyDead(data)) theyDied()
+    }
+
     private fun townOptions() {
-        startActivity(ShopActivity.getIntent(this))
-        // TODO("Not yet implemented")
+        val intent = ShopActivity.getIntent(this, "this is a string wow")
+        startActivityForResult(intent, IntentHandler.REQUEST_CODE_SHOP_ACTIVITY)
     }
 
     private fun wildernessOptions() {
-        // TODO("Not yet implemented")
+        @SuppressLint("SetTextI18n")
+        options.text = "JK I never implemented that"
     }
 
     private fun move(bearing: Bearing) {
         val player = GameState.player
 
-        if(boundsCheck(player.xLoc, player.yLoc, bearing)) {
+        if(boundsCheck(bearing)) {
             // Bounds check passes, player can move in this direction
             player.xLoc += bearing.x
             player.yLoc += bearing.y
@@ -60,11 +69,44 @@ class NavigationActivity : AppCompatActivity() {
         }
     }
 
-    private fun boundsCheck(xLoc: Int, yLoc: Int, bearing: Bearing): Boolean =
-        xLoc + bearing.x < GameState.gameMap.size
+    @SuppressLint("SetTextI18n")
+    private fun theyDied() {
+        locationDesc.text = "You have died"
+        areaDesc.text = "Game Over"
+        options.text = "Restart Game"
+
+        north.isEnabled = false
+        north.setTextColor(Color.GRAY)
+        south.isEnabled = false
+        south.setTextColor(Color.GRAY)
+        east.isEnabled = false
+        east.setTextColor(Color.GRAY)
+        west.isEnabled = false
+        west.setTextColor(Color.GRAY)
+
+        options.setOnClickListener {
+            GameState.resetGame()
+            north.isEnabled = true
+            south.isEnabled = true
+            east.isEnabled = true
+            west.isEnabled = true
+            updateText()
+            options.setOnClickListener { when(GameState.gameMap[GameState.player].type) {
+                Area.AreaType.TOWN -> townOptions()
+                Area.AreaType.WILDERNESS -> wildernessOptions()
+            } }
+        }
+    }
+
+    private fun boundsCheck(bearing: Bearing): Boolean {
+        val xLoc = GameState.player.xLoc
+        val yLoc = GameState.player.yLoc
+
+        return xLoc + bearing.x < GameState.gameMap.size
                 && xLoc + bearing.x >= 0
                 && yLoc + bearing.y < GameState.gameMap[0].size
                 && yLoc + bearing.y >= 0
+    }
 
     @SuppressLint("SetTextI18n")
     private fun updateText() {
@@ -87,24 +129,27 @@ class NavigationActivity : AppCompatActivity() {
                 }
             }
         }
-        else {
-            locationDesc.text = "You have died"
-            areaDesc.text = "Game Over"
-            options.text = "Restart Game"
-
-            north.setOnClickListener {  }
-            south.setOnClickListener {  }
-            east.setOnClickListener {  }
-            west.setOnClickListener {  }
-
-            options.setOnClickListener {
-                GameState.resetGame()
-                startGame()
-            }
-        }
+        else theyDied()
 
         // Reset the error message
         errorDesc.text = ""
+
+        north.setTextColor(when (boundsCheck(Bearing.NORTH)) {
+            true -> Color.BLACK
+            false -> Color.GRAY
+        })
+        south.setTextColor(when (boundsCheck(Bearing.SOUTH)) {
+            true -> Color.BLACK
+            false -> Color.GRAY
+        })
+        east.setTextColor(when (boundsCheck(Bearing.EAST)) {
+            true -> Color.BLACK
+            false -> Color.GRAY
+        })
+        west.setTextColor(when (boundsCheck(Bearing.WEST)) {
+            true -> Color.BLACK
+            false -> Color.GRAY
+        })
     }
 
     enum class Bearing(val x: Int, val y: Int) {
@@ -115,8 +160,8 @@ class NavigationActivity : AppCompatActivity() {
     }
 
     companion object IntentHandler {
-        fun getIntent(c: Context) : Intent {
-            return Intent(c, NavigationActivity::class.java)
-        }
+        private const val REQUEST_CODE_SHOP_ACTIVITY = 0
+
+        fun getIntent(c: Context) : Intent = Intent(c, NavigationActivity::class.java)
     }
 }

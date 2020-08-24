@@ -2,8 +2,12 @@ package com.alec.mad.p2
 
 import kotlin.random.Random
 
+/**
+ * Game state singleton
+ */
 object GameState {
-    private const val STARTING_HEALTH = 100F
+    const val PLAYER_MAX_HEALTH = 100F
+
     private const val STARTING_CASH = 50
     private const val GAME_MAP_SIZE_X = 10
     private const val GAME_MAP_SIZE_Y = 10
@@ -27,7 +31,7 @@ object GameState {
      * Creates a new player with starting location, cash and health.
      */
     private fun newPlayer(): Player = Player(
-        STARTING_LOC_X, STARTING_LOC_Y, STARTING_CASH, STARTING_HEALTH)
+        STARTING_LOC_X, STARTING_LOC_Y, STARTING_CASH, PLAYER_MAX_HEALTH)
 
     /**
      * Creates a new game map of dimensions GAME_MAP_SIZE_X by GAME_MAP_SIZE_Y with randomly
@@ -54,6 +58,7 @@ object GameState {
             get() = items[Random.nextInt(0, items.size)]
 
         private val items: List<Item> = listOf(
+            Food("Super poisonous food do not eat", 1, -100F),
             Food("Apple", 3, 5F),
             Food("Vegemite scroll", 6, 8F),
             Food("Pasta bake", 10, 10F),
