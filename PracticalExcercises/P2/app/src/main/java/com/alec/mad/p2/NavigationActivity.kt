@@ -8,12 +8,17 @@ import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlin.properties.Delegates
 
 class NavigationActivity : AppCompatActivity() {
+
+    private var saveTimes: Int by Delegates.notNull()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        this.saveTimes = savedInstanceState?.getInt(SAVE_TIMES) ?: 0
 
         north.setOnClickListener { move(Bearing.NORTH) }
         south.setOnClickListener { move(Bearing.SOUTH) }
@@ -38,6 +43,12 @@ class NavigationActivity : AppCompatActivity() {
             if (ShopActivity.areTheyDead(data)) theyDied()
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putInt(SAVE_TIMES, saveTimes + 1)
+    }
+
     private fun townOptions() {
         val intent = ShopActivity.getIntent(this, "this is a string wow")
         startActivityForResult(intent, IntentHandler.REQUEST_CODE_SHOP_ACTIVITY)
@@ -46,6 +57,7 @@ class NavigationActivity : AppCompatActivity() {
     private fun wildernessOptions() {
         @SuppressLint("SetTextI18n")
         options.text = "JK I never implemented that"
+        errorDesc.text = this.saveTimes.toString()
     }
 
     private fun move(bearing: Bearing) {
@@ -160,6 +172,8 @@ class NavigationActivity : AppCompatActivity() {
     }
 
     companion object IntentHandler {
+        private const val SAVE_TIMES = "com.alec.mad.p2.saveTimes"
+
         private const val REQUEST_CODE_SHOP_ACTIVITY = 0
 
         fun getIntent(c: Context) : Intent = Intent(c, NavigationActivity::class.java)
