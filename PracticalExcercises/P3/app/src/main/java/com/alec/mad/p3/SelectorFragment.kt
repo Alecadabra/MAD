@@ -1,18 +1,14 @@
 package com.alec.mad.p3
 
-import Structure
-import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.fragment_selector.*
 import kotlinx.android.synthetic.main.list_selection.*
-import kotlinx.android.synthetic.main.list_selection.view.*
+import kotlin.RuntimeException
 
 class SelectorFragment : Fragment() {
 
@@ -20,11 +16,7 @@ class SelectorFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_selector, container, false)
-
-
-
-        return view
+        return inflater.inflate(R.layout.fragment_selector, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -67,8 +59,10 @@ class SelectorFragment : Fragment() {
 
         fun bind(structure: Structure) {
             this.structure = structure
-            this@SelectorFragment.label?.text = structure.label
+            this@SelectorFragment.label?.setText(structure.label)
+                //?: throw RuntimeException("Could not set label text: ${this@SelectorFragment.label}")
             this@SelectorFragment.image?.setImageResource(structure.drawableId)
+                //?: throw RuntimeException("Could not set image : ${this@SelectorFragment.image}")
         }
     }
 }

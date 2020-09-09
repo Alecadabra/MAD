@@ -8,14 +8,22 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Set the fragments up
-        if (supportFragmentManager.findFragmentById(R.id.map) == null) {
-            supportFragmentManager.beginTransaction().add(R.id.map, MapFragment()).commit()
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction().replace(R.id.map_container, MapFragment()).commit()
+            supportFragmentManager.beginTransaction().replace(R.id.selector_container, SelectorFragment()).commit()
         }
 
-        if (supportFragmentManager.findFragmentById(R.id.selector) == null) {
-            supportFragmentManager.beginTransaction().add(R.id.selector, SelectorFragment())
+        /*
+        // Set the fragments up
+        if (supportFragmentManager.findFragmentById(R.id.map_container) == null) {
+            supportFragmentManager.beginTransaction().add(R.id.map_container, MapFragment())
                 .commit()
         }
+
+        if (supportFragmentManager.findFragmentById(R.id.selector_container) == null) {
+            supportFragmentManager.beginTransaction()
+                .add(R.id.selector_container, SelectorFragment())
+                .commit()
+        }*/
     }
 }

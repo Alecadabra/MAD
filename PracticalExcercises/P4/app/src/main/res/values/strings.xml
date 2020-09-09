@@ -1,0 +1,38 @@
+<resources>
+    <string name="app_name">P4</string>
+    <string name="labelNewFaction">New Faction</string>
+    <string name="labelName">Name</string>
+    <string name="labelStrength">Strength</string>
+    <string name="labelRelationship">Relationship</string>
+    <string name="labelAdd">Add</string>
+    <string name="labelFactions">Factions</string>
+    <string-array name="relationships">
+        <item>Enemy</item>
+        <item>Neutral</item>
+        <item>Ally</item>
+    </string-array>
+    <string-array name="factionNames">
+        <item>Custom...</item>
+        <item>Beta Colony</item>
+        <item>Centauri Republic</item>
+        <item>Covenant</item>
+        <item>Foundation Federation</item>
+        <item>First Order</item>
+        <item>Galactic Federation</item>
+        <item>Hynerian Empire</item>
+        <item>Kingdom of Lancre</item>
+        <item>Mars Congressional Republic</item>
+        <item>Mimic Horde</item>
+        <item>New Economic Block</item>
+        <item>Q Continuum</item>
+        <item>Quintessons</item>
+        <item>Replicators</item>
+        <item>Sirius Cybernetics Corporation, Complaints Division</item>
+        <item>Skynet</item>
+        <item>Twelve Colonies</item>
+        <item>Wakanda</item>
+        <item>Weeping Angels</item>
+        <item>The Witness</item>
+        <item>Zerg</item>
+    </string-array>
+</resources>

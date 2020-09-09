@@ -1,5 +1,4 @@
-import com.alec.mad.p3.R
-import java.util.*
+package com.alec.mad.p3
 
 /**
  * Stores the list of possible structures. This has a static get() method for retrieving an
