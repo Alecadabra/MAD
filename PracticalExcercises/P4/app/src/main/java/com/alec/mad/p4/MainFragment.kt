@@ -16,7 +16,6 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.alec.mad.p4.Faction.Relationship
-import java.lang.RuntimeException
 
 class MainFragment : Fragment() {
 
@@ -26,16 +25,16 @@ class MainFragment : Fragment() {
     /** Views */
     private lateinit var views: ViewContainer
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        this.factionList = FactionList(context)
+        // Initialise the faction list when we get a non-null context
+        this.factionList = FactionList(context).also {
+            it.load()
+        }
     }
 
     override fun onCreateView(li: LayoutInflater, parent: ViewGroup?, b: Bundle?): View {
+        // Inflate the view
         val view: View = li.inflate(R.layout.fragment_main, parent, false)
 
         // Get all view references
@@ -66,11 +65,8 @@ class MainFragment : Fragment() {
             override fun onItemSelected(
                 adapterView: AdapterView<*>?, view: View, position: Int, rowId: Long
             ) {
-                if (position == 0) {
-                    this@MainFragment.views.nameEditor.visibility = View.VISIBLE
-                } else {
-                    this@MainFragment.views.nameEditor.visibility = View.GONE
-                }
+                this@MainFragment.views.nameEditor.visibility =
+                    (if (position == 0) View.VISIBLE else View.GONE)
             }
 
             override fun onNothingSelected(adapterView: AdapterView<*>?) {
@@ -93,8 +89,9 @@ class MainFragment : Fragment() {
             // was added to the list, which is important because...
             val insertPosition = this.factionList.add(
                 Faction(
-                    name = name, strength = this.views.strength.text.toString().toInt(),
-                    relationship = Relationship.from(this.views.relationship.selectedItemPosition)
+                    name = name,
+                    strength = this.views.strength.text.toString().toInt(),
+                    relationship = this.views.relationship.selectedItemPosition
                 )
             )
 
@@ -143,19 +140,19 @@ class MainFragment : Fragment() {
                 // them.
                 override fun beforeTextChanged(
                     charSequence: CharSequence, i: Int, i1: Int, i2: Int
-                ) {
-                }
+                ) {}
 
                 override fun onTextChanged(
                     charSequence: CharSequence, i: Int, i1: Int, i2: Int
-                ) {
-                }
+                ) {}
 
                 // This is where we get notified that the text has actually been changed.
                 override fun afterTextChanged(editable: Editable) {
-                    fac.name = this@FactionViewHolder.name.text.toString()
-                    fac.strength = this@FactionViewHolder.strength.text.toString().toInt()
-                    factionList.edit(fac)
+                    this@FactionViewHolder.fac.also {
+                        it.name = this@FactionViewHolder.name.text.toString()
+                        it.strength = this@FactionViewHolder.strength.text.toString().toInt()
+                        this@MainFragment.factionList.edit(it)
+                    }
                 }
             }
 
@@ -165,27 +162,27 @@ class MainFragment : Fragment() {
                 override fun onItemSelected(
                     parent: AdapterView<*>?, view: View, position: Int, id: Long
                 ) {
-                    fac.relationship = Relationship.from(position)
-                    factionList.edit(fac)
+                    this@FactionViewHolder.fac.relationship = Relationship.from(position)
+                    this@MainFragment.factionList.edit(fac)
                 }
 
                 override fun onNothingSelected(adapterView: AdapterView<*>?) {
-                    relationship.setSelection(Relationship.from().idx)
+                    this@FactionViewHolder.relationship.setSelection(Relationship.from().idx)
                 }
             }
 
             // Event handler for the 'del' button -- for deleting a faction.
             this.delButton.setOnClickListener {
-                factionList.remove(fac)
+                this@MainFragment.factionList.remove(fac)
                 this@MainFragment.views.adapter.notifyItemRemoved(bindingAdapterPosition)
             }
         }
     }
 
-    inner class FactionAdapter : RecyclerView.Adapter<FactionViewHolder?>() {
+    inner class FactionAdapter : RecyclerView.Adapter<FactionViewHolder>() {
 
         override fun onCreateViewHolder(container: ViewGroup, viewType: Int): FactionViewHolder {
-            return FactionViewHolder(LayoutInflater.from(activity), container)
+            return FactionViewHolder(LayoutInflater.from(this@MainFragment.activity), container)
         }
 
         override fun onBindViewHolder(vh: FactionViewHolder, position: Int) {

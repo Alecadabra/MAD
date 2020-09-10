@@ -11,17 +11,17 @@ class FactionListDbHelper(context: Context?) : SQLiteOpenHelper(context, DB_NAME
         const val DB_NAME = "factions.db"
     }
 
-
     override fun onCreate(p0: SQLiteDatabase?) {
-        p0?.execSQL("""
-                    |CREATE TABLE ${FactionTable.NAME} (
-                    |    ${FactionTable.Cols.ID} INTEGER,
-                    |    ${FactionTable.Cols.NAME} TEXT,
-                    |    ${FactionTable.Cols.STRENGTH} INTEGER,
-                    |    ${FactionTable.Cols.RELATIONSHIP} INTEGER
-                    |)
-                    """.trimMargin("|")
-        )
+        p0?.execSQL(
+            """
+            CREATE TABLE ${FactionTable.NAME} (
+                ${FactionTable.Cols.ID} INTEGER,
+                ${FactionTable.Cols.NAME} TEXT,
+                ${FactionTable.Cols.STRENGTH} INTEGER,
+                ${FactionTable.Cols.RELATIONSHIP} INTEGER
+                )
+            """.trimIndent()
+        ) ?: throw IllegalStateException("Null database reference")
     }
 
     override fun onUpgrade(p0: SQLiteDatabase?, p1: Int, p2: Int) {

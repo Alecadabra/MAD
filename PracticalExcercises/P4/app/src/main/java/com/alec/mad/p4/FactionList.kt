@@ -42,9 +42,7 @@ class FactionList(context: Context) {
         }
     }
 
-    operator fun get(i: Int): Faction {
-        return factions[i]
-    }
+    operator fun get(i: Int): Faction = this.factions[i]
 
     fun add(newFaction: Faction): Int {
         factions.add(newFaction)

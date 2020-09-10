@@ -10,7 +10,12 @@ class Faction(
     var relationship: Relationship = Relationship.DEFAULT
 ) {
 
-    constructor(id: Int, name: String, strength: Int, relationship: Int) : this(
+    constructor(
+        id: Int = nextId,
+        name: String,
+        strength: Int = DEFAULT_STRENGTH,
+        relationship: Int // Rather than the enum
+    ) : this(
         id,
         name,
         strength,
@@ -32,10 +37,11 @@ class Faction(
     enum class Relationship(val idx: Int) {
         ENEMY(0),
         NEUTRAL(1),
-        ALLY(2),
-        DEFAULT(NEUTRAL.idx);
+        ALLY(2);
 
         companion object {
+            val DEFAULT = NEUTRAL
+
             fun from(num: Int = -1) = when (num) {
                 0 -> ENEMY
                 1 -> NEUTRAL
