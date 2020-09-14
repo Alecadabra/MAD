@@ -8,10 +8,25 @@ Part of my Computer Science degree at Curtin University.
 
 Syllabus:
 
-> Software development principles and practices applied to the design, implementation and testing of mobile applications. Topics include: mobile user interface design, structural design based on standard mobile development frameworks and APIs, integration with online services, evaluation of security and power consumption issues, and testing practices.
+> Software development principles and practices applied to the design, implementation and testing
+> of mobile applications. Topics include: mobile user interface design, structural design based on
+> standard mobile development frameworks and APIs, integration with online services, evaluation of
+> security and power consumption issues, and testing practices.
+
+## [Assignment 1](Assignment%201)
+
+<!-- TODO -->
+
+## [Assignment 2](Assignment%202)
+
+<!-- TODO -->
 
 ## [Practical Excercises](Practical%20Excercises)
 
-Weekly unasessed assignments to demonstrate that week's course content. I don't
+Weekly un-assessed assignments to demonstrate that week's course content. I don't
 provide the worksheets that these are based on for copyright reasons so they
 don't make a lot of sense without context.
+
+## [Take Home Exam](Take%20Home%20Exam)
+
+<!-- TODO -->
