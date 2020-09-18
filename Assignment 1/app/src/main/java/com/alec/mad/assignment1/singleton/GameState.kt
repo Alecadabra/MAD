@@ -1,5 +1,7 @@
-package com.alec.mad.assignment1
+package com.alec.mad.assignment1.singleton
 
+import com.alec.mad.assignment1.R
+import com.alec.mad.assignment1.fragment.StatsBar
 import com.alec.mad.assignment1.model.Flag
 import com.alec.mad.assignment1.model.Question
 import kotlin.random.Random
@@ -20,9 +22,9 @@ object GameState {
     var playerPoints: Int = Init.initPlayerPoints()
         set(value) {
             // Update player condition
-            this.playerCondition = when {
+            playerCondition = when {
                 value <= 0                 -> PlayerCondition.LOST
-                value >= this.targetPoints -> PlayerCondition.WON
+                value >= targetPoints -> PlayerCondition.WON
                 else                       -> PlayerCondition.PLAYING
             }
 
@@ -102,12 +104,12 @@ object GameState {
         /**
          * Gets a player's starting points.
          */
-        fun initPlayerPoints(): Int = this.nextStartingPoints
+        fun initPlayerPoints(): Int = nextStartingPoints
 
         /**
          * Gets a player's target points.
          */
-        fun initTargetPoints(playerPoints: Int): Int = this.rng.nextInt(
+        fun initTargetPoints(playerPoints: Int): Int = rng.nextInt(
             playerPoints, TARGET_POINTS_UPPER
         )
 
@@ -115,34 +117,34 @@ object GameState {
          * Builds a list of questions for a flag of given name.
          */
         fun initFlagQuestions(flagName: String) = List<Question>(nextNoQuestions) {
-            when (this.nextQuestionOption) {
+            when (nextQuestionOption) {
                 0 -> Question( // 'Is this the flag of x' where the answer is yes
-                    this.nextQuestionPoints,
-                    this.nextQuestionPenalty,
-                    this.nextQuestionIsSpecial,
+                    nextQuestionPoints,
+                    nextQuestionPenalty,
+                    nextQuestionIsSpecial,
                     "Is this the flag of $flagName?",
                     listOf("Yes", "No"),
                     "Yes"
                 )
                 1 -> Question( // 'Is this the flag of x' where the answer is no
-                    this.nextQuestionPoints,
-                    this.nextQuestionPenalty,
-                    this.nextQuestionIsSpecial,
+                    nextQuestionPoints,
+                    nextQuestionPenalty,
+                    nextQuestionIsSpecial,
                     "Is this the flag of ${Flags.nextFlagWhere { it.first != flagName }.first}?",
                     listOf("Yes", "No"),
                     "No"
                 )
                 2 -> Question( // Multiple choice of 'what flag is this'
-                    this.nextQuestionPoints,
-                    this.nextQuestionPenalty,
-                    this.nextQuestionIsSpecial,
+                    nextQuestionPoints,
+                    nextQuestionPenalty,
+                    nextQuestionIsSpecial,
                     "What country is this the flag of?",
                     listOf(
                         flagName,
                         Flags.nextFlagWhere { it.first != flagName }.first,
                         Flags.nextFlagWhere { it.first != flagName }.first,
                         Flags.nextFlagWhere { it.first != flagName }.first
-                    ).shuffled(this.rng),
+                    ).shuffled(rng),
                     flagName
                 )
                 else -> throw IllegalStateException(
@@ -210,8 +212,8 @@ object GameState {
                 "Poland" to R.drawable.flag_pl,
                 "Russia" to R.drawable.flag_ru,
                 "The United Kingdom" to R.drawable.flag_uk,
-                "USA" to  R.drawable.flag_us
-            ).shuffled(Init.rng)
+                "USA" to R.drawable.flag_us
+            ).shuffled(rng)
 
             private var flagIterator: Iterator<Pair<String, Int>> = flags.iterator()
 
@@ -221,12 +223,12 @@ object GameState {
              * This will recurse infinitely if no match is found.
              */
             fun nextFlagWhere(check: (Pair<String, Int>) -> Boolean): Pair<String, Int> {
-                if (!this.flagIterator.hasNext()) {
+                if (!flagIterator.hasNext()) {
                     // If the iterator is at it's end, reshuffle the flags and loop back around
-                    this.flagIterator = this.flags.shuffled(Init.rng).iterator()
+                    flagIterator = flags.shuffled(rng).iterator()
                 }
 
-                val flag = this.flagIterator.next()
+                val flag = flagIterator.next()
 
                 return if (check(flag)) {
                     flag

@@ -1,4 +1,4 @@
-package com.alec.mad.assignment1
+package com.alec.mad.assignment1.fragment
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import com.alec.mad.assignment1.singleton.GameState
+import com.alec.mad.assignment1.R
 
 @SuppressLint("SetTextI18n")
 class StartingScreen : Fragment() {

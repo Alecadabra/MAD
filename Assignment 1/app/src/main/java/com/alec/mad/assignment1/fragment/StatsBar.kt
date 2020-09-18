@@ -1,4 +1,4 @@
-package com.alec.mad.assignment1
+package com.alec.mad.assignment1.fragment
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -7,7 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.alec.mad.assignment1.GameState.PlayerCondition
+import com.alec.mad.assignment1.singleton.GameState
+import com.alec.mad.assignment1.singleton.GameState.PlayerCondition
+import com.alec.mad.assignment1.R
 
 @SuppressLint("SetTextI18n")
 class StatsBar : Fragment() {
@@ -41,7 +43,7 @@ class StatsBar : Fragment() {
             val remaining = GameState.targetPoints - pts
             val playerCondition = GameState.playerCondition
 
-            this.singletonPtsReference.text = when (playerCondition) {
+            singletonPtsReference.text = when (playerCondition) {
                 PlayerCondition.LOST -> "You are dead. No big surprise"
                 PlayerCondition.PLAYING -> "You have $pts points, $remaining more to win!"
                 PlayerCondition.WON -> "You won!"
