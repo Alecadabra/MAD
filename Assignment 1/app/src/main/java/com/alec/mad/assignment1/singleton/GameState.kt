@@ -1,7 +1,7 @@
 package com.alec.mad.assignment1.singleton
 
 import com.alec.mad.assignment1.R
-import com.alec.mad.assignment1.fragment.StatsBar
+import com.alec.mad.assignment1.fragment.StatsBarFragment
 import com.alec.mad.assignment1.model.Flag
 import com.alec.mad.assignment1.model.Question
 import kotlin.random.Random
@@ -31,7 +31,7 @@ object GameState {
             field = value
 
             // Notify the stats bar
-            StatsBar.onUpdatePoints()
+            StatsBarFragment.onUpdatePoints()
         }
 
     /**
@@ -116,9 +116,10 @@ object GameState {
         /**
          * Builds a list of questions for a flag of given name.
          */
-        fun initFlagQuestions(flagName: String) = List<Question>(nextNoQuestions) {
+        fun initFlagQuestions(flagName: String) = List<Question>(nextNoQuestions) { idx ->
             when (nextQuestionOption) {
                 0 -> Question( // 'Is this the flag of x' where the answer is yes
+                    idx + 1,
                     nextQuestionPoints,
                     nextQuestionPenalty,
                     nextQuestionIsSpecial,
@@ -127,6 +128,7 @@ object GameState {
                     "Yes"
                 )
                 1 -> Question( // 'Is this the flag of x' where the answer is no
+                    idx + 1,
                     nextQuestionPoints,
                     nextQuestionPenalty,
                     nextQuestionIsSpecial,
@@ -135,6 +137,7 @@ object GameState {
                     "No"
                 )
                 2 -> Question( // Multiple choice of 'what flag is this'
+                    idx + 1,
                     nextQuestionPoints,
                     nextQuestionPenalty,
                     nextQuestionIsSpecial,

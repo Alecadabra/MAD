@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fragmentSelectorCell"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    tools:ignore="HardcodedText"
+    android:layout_margin="8dp"
+    android:layout_gravity="center">
+
+    <ImageButton
+        android:id="@+id/fragmentSelectorCellImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="Background image"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:padding="16dp"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:src="@android:color/transparent" />
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@+id/fragmentSelectorCellImage"
+        app:layout_constraintBottom_toTopOf="@+id/fragmentSelectorCellImage">
+        
+        <TextView
+            android:id="@+id/fragmentSelectorCellAttr1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:text="Q1"/>
+
+        <TextView
+            android:id="@+id/fragmentSelectorCellAttr2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:text="Points: x"/>
+
+        <TextView
+            android:id="@+id/fragmentSelectorCellAttr3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:text="Penalty: y"/>
+        
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

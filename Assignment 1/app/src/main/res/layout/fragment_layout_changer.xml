@@ -1,48 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".fragment.LayoutChanger"
-    tools:ignore="HardcodedText" >
-
-
-    <Button
-        android:id="@+id/layoutOneButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="One"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    android:layout_height="wrap_content"
+    tools:ignore="HardcodedText"
+    android:layout_gravity="center"
+    android:layout_marginVertical="4dp"
+    android:orientation="horizontal"
+    style="?android:attr/borderlessButtonStyle"
+    tools:context=".fragment.LayoutChangerFragment">
 
     <Button
-        android:id="@+id/layoutTwoButton"
+        android:id="@+id/oneSpanButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Two"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/layoutOneButton"
-        app:layout_constraintTop_toTopOf="parent" />
+        style="?android:attr/borderlessButtonStyle"/>
 
     <Button
-        android:id="@+id/layoutThreeButton"
+        android:id="@+id/twoSpanButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Three"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/layoutTwoButton"
-        app:layout_constraintTop_toTopOf="parent" />
+        style="?android:attr/borderlessButtonStyle"/>
+
+    <Button
+        android:id="@+id/threeSpanButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="?android:attr/borderlessButtonStyle"/>
 
     <Button
         android:id="@+id/swapOrientationButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Swap"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/layoutThreeButton"
-        app:layout_constraintTop_toTopOf="parent" />
+        style="?android:attr/borderlessButtonStyle"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

@@ -12,7 +12,7 @@ import com.alec.mad.assignment1.singleton.GameState.PlayerCondition
 import com.alec.mad.assignment1.R
 
 @SuppressLint("SetTextI18n")
-class StatsBar : Fragment() {
+class StatsBarFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

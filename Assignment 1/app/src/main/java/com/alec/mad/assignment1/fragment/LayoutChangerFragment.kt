@@ -13,7 +13,9 @@ import com.alec.mad.assignment1.singleton.LayoutController
 import com.alec.mad.assignment1.singleton.LayoutControllerObserver
 
 @SuppressLint("SetTextI18n")
-class LayoutChanger() : Fragment(), LayoutControllerObserver {
+class LayoutChangerFragment : Fragment(), LayoutControllerObserver {
+
+    lateinit var layoutController: LayoutController
 
     private lateinit var oneSpanBtn: Button
     private lateinit var twoSpanBtn: Button
@@ -27,40 +29,42 @@ class LayoutChanger() : Fragment(), LayoutControllerObserver {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_layout_changer, container, false)
 
-        LayoutController.observers.add(this)
-
         // Get references to views
-        this.oneSpanBtn = view.findViewById(R.id.layoutOneButton) as Button
-        this.twoSpanBtn = view.findViewById(R.id.layoutTwoButton) as Button
-        this.threeSpanBtn = view.findViewById(R.id.layoutThreeButton) as Button
+        this.oneSpanBtn = view.findViewById(R.id.oneSpanButton) as Button
+        this.twoSpanBtn = view.findViewById(R.id.twoSpanButton) as Button
+        this.threeSpanBtn = view.findViewById(R.id.threeSpanButton) as Button
         this.orientationBtn = view.findViewById(R.id.swapOrientationButton) as Button
 
-        this.oneSpanBtn.setOnClickListener { LayoutController.spanCount = 1 }
-        this.twoSpanBtn.setOnClickListener { LayoutController.spanCount = 2 }
-        this.threeSpanBtn.setOnClickListener { LayoutController.spanCount = 3 }
-        this.orientationBtn.setOnClickListener { LayoutController.swapOrientation() }
+        this.oneSpanBtn.setOnClickListener { this.layoutController.spanCount = 1 }
+        this.twoSpanBtn.setOnClickListener { this.layoutController.spanCount = 2 }
+        this.threeSpanBtn.setOnClickListener { this.layoutController.spanCount = 3 }
+        this.orientationBtn.setOnClickListener { this.layoutController.swapOrientation() }
+
+        this.layoutController.observers.add(this)
+        this.onUpdateOrientation(this.layoutController.orientation)
+        this.onUpdateSpanCount(this.layoutController.spanCount)
 
         return view
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        LayoutController.observers.remove(this)
+        this.layoutController.observers.remove(this)
     }
 
     override fun onUpdateOrientation(@RecyclerView.Orientation orientation: Int) {
         when (orientation) {
             LayoutController.HORIZONTAL -> {
-                this.oneSpanBtn.text = "One Column"
-                this.twoSpanBtn.text = "Two Columns"
-                this.threeSpanBtn.text = "Three Columns"
-                this.orientationBtn.text = "Rows"
-            }
-            LayoutController.VERTICAL -> {
                 this.oneSpanBtn.text = "One Row"
                 this.twoSpanBtn.text = "Two Rows"
                 this.threeSpanBtn.text = "Three Rows"
-                this.orientationBtn.text = "Columns"
+                this.orientationBtn.text = "Cols"
+            }
+            LayoutController.VERTICAL -> {
+                this.oneSpanBtn.text = "One Col"
+                this.twoSpanBtn.text = "Two Cols"
+                this.threeSpanBtn.text = "Three Cols"
+                this.orientationBtn.text = "Rows"
             }
         }
     }
