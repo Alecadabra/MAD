@@ -16,7 +16,8 @@ import com.alec.mad.assignment1.singleton.LayoutController
 import com.alec.mad.assignment1.singleton.LayoutControllerObserver
 import com.alec.mad.assignment1.singleton.Orientation
 
-abstract class AbstractSelectorFragment<T : SelectorCellModel> : Fragment(), LayoutControllerObserver {
+abstract class AbstractSelectorFragment<T : SelectorCellModel> : Fragment(),
+    LayoutControllerObserver {
 
     companion object {
         private const val BUNDLE_LAYOUT_CONTROLLER =
@@ -25,22 +26,24 @@ abstract class AbstractSelectorFragment<T : SelectorCellModel> : Fragment(), Lay
 
     private lateinit var layoutController: LayoutController
 
-    private val layoutManager: GridLayoutManager get() {
-        val rv = this.view?.findViewById(R.id.selectorList) as? RecyclerView
-            ?: throw IllegalStateException("RecyclerView not present")
-        return rv.layoutManager as? GridLayoutManager
-            ?: throw IllegalStateException("GridLayoutManager not present")
-    }
+    private val layoutManager: GridLayoutManager
+        get() {
+            val rv = this.view?.findViewById(R.id.selectorList) as? RecyclerView
+                ?: throw IllegalStateException("RecyclerView not present")
+            return rv.layoutManager as? GridLayoutManager
+                ?: throw IllegalStateException("GridLayoutManager not present")
+        }
 
     protected abstract val values: List<T>
 
     /**
      * Layout ID to use in adapter
      */
-    private val cellLayout: Int get() = when (layoutController.orientationEnum) {
-        Orientation.HORIZONTAL -> R.layout.fragment_selector_cell_hor
-        Orientation.VERTICAL -> R.layout.fragment_selector_cell_vert
-    }
+    private val cellLayout: Int
+        get() = when (layoutController.orientationEnum) {
+            Orientation.HORIZONTAL -> R.layout.fragment_selector_cell_hor
+            Orientation.VERTICAL -> R.layout.fragment_selector_cell_vert
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,25 +67,21 @@ abstract class AbstractSelectorFragment<T : SelectorCellModel> : Fragment(), Lay
         )
         rv.adapter = SelectorFragmentAdapter(this.values, this.cellLayout)
 
-        // Add the layout changer to it's frame if non-null
-        this.fragmentManager?.also {
-            var fragTransaction = it.beginTransaction()
+        // TODO for some reason when coming back to this fragment, the layout changer is not null even though it isn't present in the frame when the view is inflated.
+        // Add the layout changer to it's frame
+        this.fragmentManager?.also { fm ->
+            if (fm.findFragmentById(R.id.selectorLayoutChangerFrame) == null) {
+                var transaction = fm.beginTransaction()
+                val frag = LayoutChangerFragment(this.layoutController)
 
-            val layoutChangerFragment: LayoutChangerFragment = (
-                    it.findFragmentById(R.id.selectorLayoutChangerFrame)
-                        ?: LayoutChangerFragment()
-                    ) as LayoutChangerFragment
+                // Add the starting screen to the game frame
+                transaction = transaction.add(
+                    R.id.selectorLayoutChangerFrame,
+                    frag
+                )
 
-            // Give the layout controller the layout controller reference
-            layoutChangerFragment.layoutController = this.layoutController
-
-            // Add the starting screen to the game frame
-            fragTransaction = fragTransaction.add(
-                R.id.selectorLayoutChangerFrame,
-                layoutChangerFragment
-            )
-
-            fragTransaction.commit()
+                transaction.commit()
+            } else println("The fragment is there")
         } ?: throw IllegalStateException("Fragment manager null in create view")
 
         // Give the layout controller access to this fragment
@@ -123,7 +122,7 @@ abstract class AbstractSelectorFragment<T : SelectorCellModel> : Fragment(), Lay
     }
 
     inner class SelectorFragmentAdapter(
-        val values: List<T>, private val cellLayout: Int
+        private val values: List<T>, private val cellLayout: Int
     ) : RecyclerView.Adapter<SelectorFragmentAdapter.ViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

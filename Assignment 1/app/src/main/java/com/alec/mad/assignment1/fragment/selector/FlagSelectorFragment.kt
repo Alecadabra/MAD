@@ -17,25 +17,19 @@ class FlagQuestionSelectorFragment : AbstractFlagSelectorFragment() {
 
             val fm: FragmentManager = activity?.supportFragmentManager
                 ?: throw IllegalStateException("Activity not present")
-            var fragTransaction = fm.beginTransaction()
-
-            // Remove the layout changer from it's frame if it's there
-            fragTransaction = fragTransaction.remove(this)
-            fm.findFragmentById(R.id.selectorLayoutChangerFrame)?.also {
-                fragTransaction = fragTransaction.remove(it)
-            }
+            var transaction = fm.beginTransaction()
 
             // Replace the activity's fragment frame with the question selector
-            fragTransaction = fragTransaction.replace(
+            transaction = transaction.replace(
                 R.id.gameFragmentFrame,
                 QuestionSelectorFragment(item.questions)
             )
 
             // The back button will go back to the flag selection screen
-            fragTransaction = fragTransaction.addToBackStack(null)
+            transaction = transaction.addToBackStack(null)
 
             // Commit changes
-            fragTransaction.commit()
+            transaction.commit()
         }
     }
 }

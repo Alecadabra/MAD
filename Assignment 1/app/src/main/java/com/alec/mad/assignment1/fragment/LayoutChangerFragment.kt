@@ -13,9 +13,7 @@ import com.alec.mad.assignment1.singleton.LayoutController
 import com.alec.mad.assignment1.singleton.LayoutControllerObserver
 
 @SuppressLint("SetTextI18n")
-class LayoutChangerFragment : Fragment(), LayoutControllerObserver {
-
-    lateinit var layoutController: LayoutController
+class LayoutChangerFragment(private val layoutController: LayoutController) : Fragment(), LayoutControllerObserver {
 
     private lateinit var oneSpanBtn: Button
     private lateinit var twoSpanBtn: Button
