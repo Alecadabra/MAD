@@ -9,11 +9,12 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.recyclerview.widget.RecyclerView
 import com.alec.mad.assignment1.R
-import com.alec.mad.assignment1.singleton.LayoutController
-import com.alec.mad.assignment1.singleton.LayoutControllerObserver
+import com.alec.mad.assignment1.LayoutController
+import com.alec.mad.assignment1.LayoutControllerObserver
 
 @SuppressLint("SetTextI18n")
-class LayoutChangerFragment(private val layoutController: LayoutController) : Fragment(), LayoutControllerObserver {
+class LayoutChangerFragment(private val layoutController: LayoutController) : Fragment(),
+    LayoutControllerObserver {
 
     private lateinit var oneSpanBtn: Button
     private lateinit var twoSpanBtn: Button
@@ -33,11 +34,13 @@ class LayoutChangerFragment(private val layoutController: LayoutController) : Fr
         this.threeSpanBtn = view.findViewById(R.id.threeSpanButton) as Button
         this.orientationBtn = view.findViewById(R.id.swapOrientationButton) as Button
 
+        // Set button listeners
         this.oneSpanBtn.setOnClickListener { this.layoutController.spanCount = 1 }
         this.twoSpanBtn.setOnClickListener { this.layoutController.spanCount = 2 }
         this.threeSpanBtn.setOnClickListener { this.layoutController.spanCount = 3 }
         this.orientationBtn.setOnClickListener { this.layoutController.swapOrientation() }
 
+        // Set layout controller observer and manually trigger once
         this.layoutController.observers.add(this)
         this.onUpdateOrientation(this.layoutController.orientation)
         this.onUpdateSpanCount(this.layoutController.spanCount)
@@ -45,23 +48,23 @@ class LayoutChangerFragment(private val layoutController: LayoutController) : Fr
         return view
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         this.layoutController.observers.remove(this)
     }
 
     override fun onUpdateOrientation(@RecyclerView.Orientation orientation: Int) {
         when (orientation) {
             LayoutController.HORIZONTAL -> {
-                this.oneSpanBtn.text = "One Row"
-                this.twoSpanBtn.text = "Two Rows"
-                this.threeSpanBtn.text = "Three Rows"
+                this.oneSpanBtn.text = "1 Row"
+                this.twoSpanBtn.text = "2 Rows"
+                this.threeSpanBtn.text = "3 Rows"
                 this.orientationBtn.text = "Cols"
             }
             LayoutController.VERTICAL -> {
-                this.oneSpanBtn.text = "One Col"
-                this.twoSpanBtn.text = "Two Cols"
-                this.threeSpanBtn.text = "Three Cols"
+                this.oneSpanBtn.text = "1 Col"
+                this.twoSpanBtn.text = "2 Cols"
+                this.threeSpanBtn.text = "3 Cols"
                 this.orientationBtn.text = "Rows"
             }
         }

@@ -13,22 +13,23 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         this.setContentView(R.layout.activity_main)
 
-        val fm: FragmentManager = supportFragmentManager
-        var fragTransaction = fm.beginTransaction()
+        supportFragmentManager.also { fm ->
+            fm.beginTransaction().also { transaction ->
+                // Add the starting screen to the game frame
+                transaction.add(
+                    R.id.gameFragmentFrame,
+                    fm.findFragmentById(R.id.gameFragmentFrame) ?: StartingScreenFragment()
+                )
 
-        // Add the starting screen to the game frame
-        fragTransaction = fragTransaction.add(
-            R.id.gameFragmentFrame,
-            fm.findFragmentById(R.id.gameFragmentFrame) ?: StartingScreenFragment()
-        )
+                // Add the stats bar frame to it's frame
+                transaction.add(
+                    R.id.statsBarFrame,
+                    fm.findFragmentById(R.id.statsBarFrame) ?: StatsBarFragment()
+                )
 
-        // Add the stats bar frame to it's frame
-        fragTransaction = fragTransaction.add(
-            R.id.statsBarFrame,
-            fm.findFragmentById(R.id.statsBarFrame) ?: StatsBarFragment()
-        )
-
-        // Commit changes
-        fragTransaction.commit()
+                // Commit changes
+                transaction.commit()
+            }
+        }
     }
 }

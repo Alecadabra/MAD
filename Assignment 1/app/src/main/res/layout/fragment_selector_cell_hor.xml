@@ -27,13 +27,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
         android:orientation="vertical"
         android:textAppearance="?attr/textAppearanceListItem"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@+id/fragmentSelectorCellImage"
         app:layout_constraintBottom_toTopOf="@+id/fragmentSelectorCellImage"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/fragmentSelectorCellImage"
-        app:layout_constraintTop_toBottomOf="@+id/fragmentSelectorCellImage">
+        app:layout_constraintStart_toStartOf="@+id/fragmentSelectorCellImage">
+
 
         <TextView
             android:id="@+id/fragmentSelectorCellAttr1"

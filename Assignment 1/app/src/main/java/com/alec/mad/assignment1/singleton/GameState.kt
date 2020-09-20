@@ -110,7 +110,7 @@ object GameState {
          * Gets a player's target points.
          */
         fun initTargetPoints(playerPoints: Int): Int = rng.nextInt(
-            playerPoints, TARGET_POINTS_UPPER
+            playerPoints + 1, TARGET_POINTS_UPPER
         )
 
         /**

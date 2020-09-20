@@ -7,7 +7,7 @@
     android:orientation="horizontal"
     android:layout_gravity="center"
     android:gravity="center"
-    android:paddingVertical="8dp">
+    android:paddingVertical="4dp">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/statsBarPointsReadout"

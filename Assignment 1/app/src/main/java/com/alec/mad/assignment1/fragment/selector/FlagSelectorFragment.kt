@@ -1,5 +1,7 @@
 package com.alec.mad.assignment1.fragment.selector
 
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
 import androidx.fragment.app.FragmentManager
 import com.alec.mad.assignment1.R
 import com.alec.mad.assignment1.model.Flag
@@ -10,36 +12,51 @@ sealed class AbstractFlagSelectorFragment : AbstractSelectorFragment<Flag>() {
 }
 
 class FlagQuestionSelectorFragment : AbstractFlagSelectorFragment() {
+    override val title: String = "Select a flag to view questions"
+
     override fun bindViewHolder(holder: SelectorFragmentAdapter.ViewHolder, item: Flag) {
         super.bindViewHolder(holder, item)
-        holder.imageButton.setOnClickListener {
-            // Change to question fragment for this flag
 
-            val fm: FragmentManager = activity?.supportFragmentManager
-                ?: throw IllegalStateException("Activity not present")
-            var transaction = fm.beginTransaction()
-
-            // Replace the activity's fragment frame with the question selector
-            transaction = transaction.replace(
-                R.id.gameFragmentFrame,
-                QuestionSelectorFragment(item.questions)
+        // Handle being disabled
+        if (!item.enabled) {
+            // Make greyscale
+            holder.imageButton.colorFilter = ColorMatrixColorFilter(
+                ColorMatrix().also { it.setSaturation(0F) }
             )
 
-            // The back button will go back to the flag selection screen
-            transaction = transaction.addToBackStack(null)
+            holder.imageButton.isClickable = false
+            holder.imageButton.isEnabled = false
+        }
+        else holder.imageButton.setOnClickListener {
+            // Change to question fragment for this flag
+            fragmentManager?.beginTransaction()?.also { transaction ->
+                // Replace the activity's fragment frame with the question selector
+                transaction.replace(
+                    R.id.gameFragmentFrame,
+                    QuestionSelectorFragment(item.questions)
+                )
 
-            // Commit changes
-            transaction.commit()
+                // The back button will go back to the flag selection screen
+                transaction.addToBackStack(null)
+
+                // Commit changes
+                transaction.commit()
+            } ?: throw IllegalStateException("Fragment manager not present")
         }
     }
 }
 
 class FlagSpecialSelectorFragment : AbstractFlagSelectorFragment() {
+    override val title: String =
+        "You activated a special question! Choose a flag to add 10 points to all of it's questions"
+
     override fun bindViewHolder(holder: SelectorFragmentAdapter.ViewHolder, item: Flag) {
         super.bindViewHolder(holder, item)
         holder.imageButton.setOnClickListener {
             // Increase the points earned for each question in this flag by 10.
             item.questions.forEach { it.points += 10 }
+
+            // TODO go button
         }
     }
 }

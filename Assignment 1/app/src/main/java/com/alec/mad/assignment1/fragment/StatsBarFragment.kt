@@ -30,7 +30,7 @@ class StatsBarFragment : Fragment() {
 
     companion object {
         /**
-         * Singleton's reference to the textview so that it can be statically accessed by
+         * Singleton's reference to the text view so that it can be statically accessed by
          * onUpdatePoints.
          */
         private lateinit var singletonPtsReference: TextView

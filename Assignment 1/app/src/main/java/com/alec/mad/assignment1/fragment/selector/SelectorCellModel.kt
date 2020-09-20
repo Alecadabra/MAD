@@ -8,5 +8,5 @@ interface SelectorCellModel {
     val attr1: String get() = ""
     val attr2: String get() = ""
     val attr3: String get() = ""
-    var enabled: Boolean
+    val enabled: Boolean get() = true
 }

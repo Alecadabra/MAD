@@ -1,4 +1,4 @@
-package com.alec.mad.assignment1.singleton
+package com.alec.mad.assignment1
 
 import android.os.Parcel
 import android.os.Parcelable
@@ -20,10 +20,19 @@ class LayoutController(
         private const val DEFAULT_ORIENTATION = VERTICAL
         private const val DEFAULT_SPAN_COUNT = 2
 
-        @JvmField
+        /*@JvmField
         val CREATOR = object : Parcelable.Creator<LayoutController> {
             override fun createFromParcel(parcel: Parcel): LayoutController = LayoutController(parcel)
             override fun newArray(size: Int) = arrayOfNulls<LayoutController>(size)
+        }*/
+        val CREATOR = object : Parcelable.Creator<LayoutController> {
+            override fun createFromParcel(parcel: Parcel): LayoutController {
+                return LayoutController(parcel)
+            }
+
+            override fun newArray(size: Int): Array<LayoutController?> {
+                return arrayOfNulls(size)
+            }
         }
     }
 
@@ -75,6 +84,7 @@ class LayoutController(
     }
 
     override fun describeContents() = 0
+
 }
 
 enum class Orientation {
