@@ -2,13 +2,12 @@ package com.alec.mad.assignment1.fragment.selector
 
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
-import androidx.fragment.app.FragmentManager
+import com.alec.mad.assignment1.GameStateSingleton
 import com.alec.mad.assignment1.R
 import com.alec.mad.assignment1.model.Flag
-import com.alec.mad.assignment1.singleton.GameState
 
 sealed class AbstractFlagSelectorFragment : AbstractSelectorFragment<Flag>() {
-    override val values: List<Flag> = GameState.flags
+    override val values: List<Flag> = this.gameState.flags
 }
 
 class FlagQuestionSelectorFragment : AbstractFlagSelectorFragment() {
@@ -29,7 +28,7 @@ class FlagQuestionSelectorFragment : AbstractFlagSelectorFragment() {
         }
         else holder.imageButton.setOnClickListener {
             // Change to question fragment for this flag
-            fragmentManager?.beginTransaction()?.also { transaction ->
+            activity?.supportFragmentManager?.beginTransaction()?.also { transaction ->
                 // Replace the activity's fragment frame with the question selector
                 transaction.replace(
                     R.id.gameFragmentFrame,
@@ -56,7 +55,10 @@ class FlagSpecialSelectorFragment : AbstractFlagSelectorFragment() {
             // Increase the points earned for each question in this flag by 10.
             item.questions.forEach { it.points += 10 }
 
-            // TODO go button
+            try { Thread.sleep(200) }
+            catch (e: InterruptedException) { }
+
+            fragmentManager?.popBackStack()
         }
     }
 }

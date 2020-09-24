@@ -13,7 +13,7 @@ class Question(
 ) : SelectorCellModel {
     var state = State.UNANSWERED
 
-    override val enabled: Boolean get() = this.state == State.UNANSWERED
+    val enabled: Boolean get() = this.state == State.UNANSWERED
 
     override val imageSrc: Int get() = when (this.enabled) {
         false -> android.R.color.background_light // Disabled

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.StartingScreenFragment"
+    tools:context=".fragment.MainMenuFragment"
     tools:ignore="HardcodedText">
 
     <LinearLayout
@@ -22,19 +22,31 @@
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Fun with Flags" />
+            android:text="Fun with Flags"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display2"
+            android:paddingBottom="32dp"/>
+
 
         <TextView
-            android:id="@+id/pointsReadout"
+            android:id="@+id/mainMenuMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="..." />
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:paddingBottom="16dp"/>
+
+        <TextView
+            android:id="@+id/mainMenuPointsReadout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="..."
+            android:paddingBottom="16dp" />
 
         <Button
             android:id="@+id/startButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Start Game" />
+            android:text="New Game"
+            android:paddingBottom="16dp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

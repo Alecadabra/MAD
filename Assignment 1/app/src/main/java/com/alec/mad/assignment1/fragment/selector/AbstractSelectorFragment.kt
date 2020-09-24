@@ -12,12 +12,13 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.alec.mad.assignment1.R
 import com.alec.mad.assignment1.fragment.LayoutChangerFragment
-import com.alec.mad.assignment1.LayoutController
-import com.alec.mad.assignment1.LayoutControllerObserver
-import com.alec.mad.assignment1.Orientation
+import com.alec.mad.assignment1.state.LayoutState
+import com.alec.mad.assignment1.state.LayoutState.Orientation
+import com.alec.mad.assignment1.state.LayoutStateObserver
+
 
 abstract class AbstractSelectorFragment<T : SelectorCellModel> : Fragment(),
-    LayoutControllerObserver {
+    LayoutStateObserver {
 
     companion object {
         private const val PACKAGE = "com.alec.mad.assignment1.fragment.selector"
@@ -25,7 +26,7 @@ abstract class AbstractSelectorFragment<T : SelectorCellModel> : Fragment(),
         private const val BUNDLE_RV_LAYOUT_MANAGER = "$PACKAGE.rvLayoutManager"
     }
 
-    private lateinit var layoutController: LayoutController
+    private lateinit var layoutState: LayoutState
 
     protected abstract val values: List<T>
 
@@ -43,7 +44,7 @@ abstract class AbstractSelectorFragment<T : SelectorCellModel> : Fragment(),
      * Layout ID to use in adapter
      */
     private val cellLayout: Int
-        get() = when (layoutController.orientationEnum) {
+        get() = when (layoutState.orientationEnum) {
             Orientation.HORIZONTAL -> R.layout.fragment_selector_cell_hor
             Orientation.VERTICAL -> R.layout.fragment_selector_cell_vert
         }
@@ -52,8 +53,8 @@ abstract class AbstractSelectorFragment<T : SelectorCellModel> : Fragment(),
         super.onCreate(savedInstanceState)
 
         // Set up layout controller
-        this.layoutController = savedInstanceState?.getParcelable(BUNDLE_LAYOUT_CONTROLLER)
-            ?: LayoutController()/* TODO Debug print */.also { println("Couldn't get parcel for ${this.values[0]}") }
+        this.layoutState = savedInstanceState?.getParcelable(BUNDLE_LAYOUT_CONTROLLER)
+            ?: LayoutState()
     }
 
     override fun onCreateView(
@@ -72,12 +73,12 @@ abstract class AbstractSelectorFragment<T : SelectorCellModel> : Fragment(),
         rv.layoutManager = savedInstanceState?.getParcelable(BUNDLE_RV_LAYOUT_MANAGER)
             ?: GridLayoutManager(
                 this.context,
-                this.layoutController.spanCount,
-                this.layoutController.orientation,
+                this.layoutState.spanCount,
+                this.layoutState.orientation,
                 false
             )
         rv.adapter = SelectorFragmentAdapter(this.values, this.cellLayout).also {
-            println("Just set the adapter to ${layoutController.orientationEnum.name} for values ${this.values[0]}")
+            println("Just set the adapter to ${layoutState.orientationEnum.name} for values ${this.values[0]}")
         }
 
         // Add the layout changer to it's frame if not there
@@ -85,14 +86,14 @@ abstract class AbstractSelectorFragment<T : SelectorCellModel> : Fragment(),
             ?: childFragmentManager.beginTransaction().also { transaction ->
                 transaction.add(
                     R.id.selectorLayoutChangerFrame,
-                    LayoutChangerFragment(this.layoutController)
+                    LayoutChangerFragment(this.layoutState)
                 )
 
                 transaction.commit()
             }
 
         // Give the layout controller access to this fragment
-        this.layoutController.observers.add(this)
+        this.layoutState.observers.add(this)
 
         return view
     }
@@ -104,8 +105,8 @@ abstract class AbstractSelectorFragment<T : SelectorCellModel> : Fragment(),
         println("Selector for ${this.values[0]} is saving state")
 
         // Save layout controller state
-        this.layoutController.observers.remove(this)
-        outState.putParcelable(BUNDLE_LAYOUT_CONTROLLER, this.layoutController)
+        this.layoutState.observers.remove(this)
+        outState.putParcelable(BUNDLE_LAYOUT_CONTROLLER, this.layoutState)
 
         // Save recyclerview state
         this.layoutManager.onSaveInstanceState()?.also { lm ->

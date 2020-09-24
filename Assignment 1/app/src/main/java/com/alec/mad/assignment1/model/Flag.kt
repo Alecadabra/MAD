@@ -7,5 +7,5 @@ class Flag(
     val questions: List<Question>,
     override val imageSrc: Int,
 ) : SelectorCellModel {
-    override val enabled: Boolean get() = questions.any { it.enabled }
+    val enabled: Boolean get() = questions.any { it.enabled }
 }
