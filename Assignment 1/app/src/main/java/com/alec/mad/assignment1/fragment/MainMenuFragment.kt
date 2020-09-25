@@ -37,7 +37,6 @@ class MainMenuFragment(private val message: String) : Fragment() {
         this.pointsReadout.text = "New Game: You have $pts points, reach $target to win"
         this.startBtn.setOnClickListener {
             // Change to flag selection screen
-
             activity?.supportFragmentManager?.beginTransaction()?.also { transaction ->
 
                 // Replace the activity's fragment frame with the question selector
@@ -54,7 +53,7 @@ class MainMenuFragment(private val message: String) : Fragment() {
 
                 // Commit changes
                 transaction.commit()
-            }
+            } ?: throw IllegalStateException("Null activity / fragment manager")
         }
 
         return view

@@ -4,9 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.annotation.CallSuper
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,7 +19,9 @@ import com.alec.mad.assignment1.state.LayoutState.Orientation
 import com.alec.mad.assignment1.state.LayoutStateObserver
 
 
-abstract class AbstractSelectorFragment<T : SelectorCellModel> : Fragment(),
+abstract class AbstractSelectorFragment<T : SelectorCellModel>(
+    val useBackButton: Boolean, val useDynamicLayout: Boolean
+) : Fragment(),
     LayoutStateObserver {
 
     companion object {
@@ -44,7 +48,7 @@ abstract class AbstractSelectorFragment<T : SelectorCellModel> : Fragment(),
      * Layout ID to use in adapter
      */
     private val cellLayout: Int
-        get() = when (layoutState.orientationEnum) {
+        get() = when (this.layoutState.orientationEnum) {
             Orientation.HORIZONTAL -> R.layout.fragment_selector_cell_hor
             Orientation.VERTICAL -> R.layout.fragment_selector_cell_vert
         }
@@ -77,32 +81,48 @@ abstract class AbstractSelectorFragment<T : SelectorCellModel> : Fragment(),
                 this.layoutState.orientation,
                 false
             )
-        rv.adapter = SelectorFragmentAdapter(this.values, this.cellLayout).also {
-            println("Just set the adapter to ${layoutState.orientationEnum.name} for values ${this.values[0]}")
+        rv.adapter = SelectorFragmentAdapter(this.values, this.cellLayout)
+
+        // Handle dynamic layout
+        if (this.useDynamicLayout) {
+            // Add the layout changer to it's frame if not there
+            childFragmentManager.findFragmentById(R.id.selectorLayoutChangerFrame) as? LayoutChangerFragment
+                ?: childFragmentManager.beginTransaction().also { transaction ->
+                    transaction.add(
+                        R.id.selectorLayoutChangerFrame,
+                        LayoutChangerFragment(this.layoutState)
+                    )
+
+                    transaction.commit()
+                }
+
+            // Give the layout controller access to this fragment
+            this.layoutState.observers.add(this)
+
+            //TODO TEST
+            view.findViewById<FrameLayout>(R.id.selectorLayoutChangerFrame).isEnabled = false
         }
 
-        // Add the layout changer to it's frame if not there
-        childFragmentManager.findFragmentById(R.id.selectorLayoutChangerFrame) as? LayoutChangerFragment
-            ?: childFragmentManager.beginTransaction().also { transaction ->
-                transaction.add(
-                    R.id.selectorLayoutChangerFrame,
-                    LayoutChangerFragment(this.layoutState)
-                )
+        // Handle back button
+        view.findViewById<ImageButton>(R.id.selectorBackButton).also { backButton ->
+            backButton.isClickable = this.useBackButton
+            backButton.isEnabled = this.useBackButton
 
-                transaction.commit()
+            if (!this.useBackButton) {
+                backButton.setBackgroundResource(android.R.color.transparent)
+                backButton.setImageResource(android.R.color.transparent)
+                backButton.maxWidth = 0
+            } else backButton.setOnClickListener {
+                fragmentManager?.popBackStack()
+                    ?: throw IllegalStateException("Fragment manager not present")
             }
-
-        // Give the layout controller access to this fragment
-        this.layoutState.observers.add(this)
+        }
 
         return view
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-
-        // TODO Debug print
-        println("Selector for ${this.values[0]} is saving state")
 
         // Save layout controller state
         this.layoutState.observers.remove(this)
@@ -112,12 +132,6 @@ abstract class AbstractSelectorFragment<T : SelectorCellModel> : Fragment(),
         this.layoutManager.onSaveInstanceState()?.also { lm ->
             outState.putParcelable(BUNDLE_RV_LAYOUT_MANAGER, lm)
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-
-        println("Selector for ${this.values[0]} is having view destroyed")
     }
 
     @CallSuper

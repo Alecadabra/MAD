@@ -83,7 +83,7 @@ class GameState {
         /**
          * Gets a player's target points.
          */
-        fun initTargetPoints(playerPoints: Int): Int = Rand.getNextTargetPoints(playerPoints)
+        fun initTargetPoints(playerPoints: Int): Int = Rand.nextTargetPoints
 
         /**
          * Builds a list of questions for a flag of given name.
@@ -112,7 +112,8 @@ class GameState {
             // Constants for ranges of different randomly generated values
             const val STARTING_POINTS_LOWER = 0
             const val STARTING_POINTS_UPPER = 10
-            const val TARGET_POINTS_UPPER = 20
+            const val TARGET_POINTS_LOWER = 30
+            const val TARGET_POINTS_UPPER = 50
             const val NO_QUESTIONS_LOWER = 5
             const val NO_QUESTIONS_UPPER = 10
             const val QUESTION_POINTS_LOWER = 5
@@ -134,11 +135,9 @@ class GameState {
                     STARTING_POINTS_UPPER + 1
                 )
 
-            fun getNextTargetPoints(playerPoints: Int): Int = rng.nextInt(
-                playerPoints + 1, TARGET_POINTS_UPPER
-            )
-
             fun getNextFlagQuestions(flagName: String) = Questions.getQuestions(flagName)
+
+            val nextTargetPoints get() = rng.nextInt(TARGET_POINTS_LOWER, TARGET_POINTS_UPPER)
 
             /** Get the next value for the number of questions for a flag */
             val nextNoQuestions get() = rng.nextInt(NO_QUESTIONS_LOWER, NO_QUESTIONS_UPPER + 1)

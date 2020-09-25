@@ -4,7 +4,10 @@ import com.alec.mad.assignment1.R
 import com.alec.mad.assignment1.model.Question
 
 class QuestionSelectorFragment(override val values: List<Question>) :
-    AbstractSelectorFragment<Question>() {
+    AbstractSelectorFragment<Question>(
+        useBackButton = true,
+        useDynamicLayout = true
+    ) {
     override val title: String = "Choose a question"
 
     override fun bindViewHolder(holder: SelectorFragmentAdapter.ViewHolder, item: Question) {

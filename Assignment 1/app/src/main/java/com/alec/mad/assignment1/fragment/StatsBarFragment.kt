@@ -19,18 +19,16 @@ class StatsBarFragment : Fragment(), GameStateObserver {
     private lateinit var statusReadout: TextView
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_stats_bar, container, false)
 
         this.statusReadout = view.findViewById(R.id.statsBarPointsReadout) as TextView
 
-        if (this !in gameState.observers) {
-            this.gameState.observers.add(this)
-        }
-        this.onUpdatePlayerPoints(gameState.playerPoints)
+        this.gameState.observers.add(this)
+        this.onUpdatePlayerPoints(this.gameState.playerPoints)
+        this.onUpdatePlayerCondition(this.gameState.playerCondition)
 
         return view
     }
@@ -38,19 +36,24 @@ class StatsBarFragment : Fragment(), GameStateObserver {
     override fun onDestroyView() {
         super.onDestroyView()
 
-        if (this in gameState.observers) {
-            this.gameState.observers.remove(this)
-        }
+        this.gameState.observers.remove(this)
     }
 
     override fun onUpdatePlayerPoints(playerPoints: Int) {
+        if (this.gameState.playerCondition == PlayerCondition.PLAYING) {
+            val remaining = this.gameState.targetPoints - playerPoints
+            val playerCondition = this.gameState.playerCondition
 
-        val remaining = this.gameState.targetPoints - playerPoints
-        val playerCondition = this.gameState.playerCondition
+            this.statusReadout.text = "You have $playerPoints points, $remaining more to win!"
+        }
+    }
 
+    override fun onUpdatePlayerCondition(playerCondition: PlayerCondition) {
+        //TODO DEBUG
+        println("Changed player cond to $playerCondition")
         this.statusReadout.text = when (playerCondition) {
             PlayerCondition.LOST -> "You are dead. No big surprise"
-            PlayerCondition.PLAYING -> "You have $playerPoints points, $remaining more to win!"
+            PlayerCondition.PLAYING -> this.statusReadout.text // Handled by onUpdatePlayerPoints
             PlayerCondition.WON -> "You won!"
         }
     }

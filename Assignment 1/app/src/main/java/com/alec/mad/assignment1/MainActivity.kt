@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity(), GameStateObserver {
                 // Add the stats bar frame to it's frame
                 transaction.add(
                     R.id.statsBarFrame,
-                    StatsBarFragment()
+                    fm.findFragmentById(R.id.statsBarFrame) ?: StatsBarFragment()
                 )
 
                 // Commit changes
@@ -33,18 +33,14 @@ class MainActivity : AppCompatActivity(), GameStateObserver {
         }
 
         // Observe changes to the game state
-        if (this !in GameStateSingleton.state.observers) {
-            GameStateSingleton.state.observers.add(this)
-        }
+        GameStateSingleton.state.observers.add(this)
     }
 
     override fun onDestroy() {
         super.onDestroy()
 
         // Remove self from observing game state
-        if (this in GameStateSingleton.state.observers) {
-            GameStateSingleton.state.observers.remove(this)
-        }
+        GameStateSingleton.state.observers.remove(this)
     }
 
     // Observe changes to the player condition (When they win/lose)

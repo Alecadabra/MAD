@@ -2,15 +2,23 @@ package com.alec.mad.assignment1.fragment.selector
 
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
+import android.text.DynamicLayout
 import com.alec.mad.assignment1.GameStateSingleton
 import com.alec.mad.assignment1.R
+import com.alec.mad.assignment1.gameState
 import com.alec.mad.assignment1.model.Flag
 
-sealed class AbstractFlagSelectorFragment : AbstractSelectorFragment<Flag>() {
+sealed class AbstractFlagSelectorFragment(
+    useBackButton: Boolean, useDynamicLayout: Boolean
+) : AbstractSelectorFragment<Flag>(useBackButton, useDynamicLayout) {
+
     override val values: List<Flag> = this.gameState.flags
 }
 
-class FlagQuestionSelectorFragment : AbstractFlagSelectorFragment() {
+class FlagQuestionSelectorFragment : AbstractFlagSelectorFragment(
+    useBackButton = false,
+    useDynamicLayout = true
+) {
     override val title: String = "Select a flag to view questions"
 
     override fun bindViewHolder(holder: SelectorFragmentAdapter.ViewHolder, item: Flag) {
@@ -45,7 +53,10 @@ class FlagQuestionSelectorFragment : AbstractFlagSelectorFragment() {
     }
 }
 
-class FlagSpecialSelectorFragment : AbstractFlagSelectorFragment() {
+class FlagSpecialSelectorFragment : AbstractFlagSelectorFragment(
+    useBackButton = false,
+    useDynamicLayout = true
+) {
     override val title: String =
         "You activated a special question! Choose a flag to add 10 points to all of it's questions"
 
@@ -54,9 +65,6 @@ class FlagSpecialSelectorFragment : AbstractFlagSelectorFragment() {
         holder.imageButton.setOnClickListener {
             // Increase the points earned for each question in this flag by 10.
             item.questions.forEach { it.points += 10 }
-
-            try { Thread.sleep(200) }
-            catch (e: InterruptedException) { }
 
             fragmentManager?.popBackStack()
         }
