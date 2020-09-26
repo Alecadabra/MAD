@@ -17,11 +17,13 @@ object GameStateSingleton {
      * Reset the game.
      */
     fun reset() {
-        this.state = GameState()
+        val observers = state.observers
+        this.state = GameState(observers)
     }
 }
 
 /**
  * Allows all fragments to access GameStateSingleton.state with a simple this.gameState.
  */
-val Fragment.gameState get() = GameStateSingleton.state
+val Fragment.gameState
+    inline get() = GameStateSingleton.state

@@ -2,8 +2,6 @@ package com.alec.mad.assignment1.fragment.selector
 
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
-import android.text.DynamicLayout
-import com.alec.mad.assignment1.GameStateSingleton
 import com.alec.mad.assignment1.R
 import com.alec.mad.assignment1.gameState
 import com.alec.mad.assignment1.model.Flag
@@ -57,14 +55,19 @@ class FlagSpecialSelectorFragment : AbstractFlagSelectorFragment(
     useBackButton = false,
     useDynamicLayout = true
 ) {
+
+    companion object {
+        const val SPECIAL_POINT_INCREASE_AMOUNT = 10
+    }
+
     override val title: String =
         "You activated a special question! Choose a flag to add 10 points to all of it's questions"
 
     override fun bindViewHolder(holder: SelectorFragmentAdapter.ViewHolder, item: Flag) {
         super.bindViewHolder(holder, item)
         holder.imageButton.setOnClickListener {
-            // Increase the points earned for each question in this flag by 10.
-            item.questions.forEach { it.points += 10 }
+            // Increase the points earned for each question in this flag
+            item.questions.forEach { it.points += SPECIAL_POINT_INCREASE_AMOUNT }
 
             fragmentManager?.popBackStack()
         }

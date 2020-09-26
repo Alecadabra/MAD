@@ -8,6 +8,12 @@ class QuestionSelectorFragment(override val values: List<Question>) :
         useBackButton = true,
         useDynamicLayout = true
     ) {
+
+    init {
+        // Because the default constructor has parameters, which android does not like.
+        this.retainInstance = true
+    }
+
     override val title: String = "Choose a question"
 
     override fun bindViewHolder(holder: SelectorFragmentAdapter.ViewHolder, item: Question) {

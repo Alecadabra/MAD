@@ -1,14 +1,15 @@
 package com.alec.mad.assignment1.fragment.selector
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.annotation.CallSuper
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -30,19 +31,14 @@ abstract class AbstractSelectorFragment<T : SelectorCellModel>(
         private const val BUNDLE_RV_LAYOUT_MANAGER = "$PACKAGE.rvLayoutManager"
     }
 
+    // View reference
+    private lateinit var rv: RecyclerView
+
     private lateinit var layoutState: LayoutState
 
     protected abstract val values: List<T>
 
     protected abstract val title: String
-
-    private val layoutManager: GridLayoutManager
-        get() {
-            val rv = this.view?.findViewById(R.id.selectorList) as? RecyclerView
-                ?: throw IllegalStateException("RecyclerView not present")
-            return rv.layoutManager as? GridLayoutManager
-                ?: throw IllegalStateException("GridLayoutManager not present")
-        }
 
     /**
      * Layout ID to use in adapter
@@ -61,6 +57,26 @@ abstract class AbstractSelectorFragment<T : SelectorCellModel>(
             ?: LayoutState()
     }
 
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+
+        val rv = this.view?.findViewById<RecyclerView>(R.id.selectorList)
+            ?: throw IllegalStateException("RecyclerView not present")
+
+        savedInstanceState?.also { bundle ->
+            // Restore from instance state
+            rv.layoutManager?.onRestoreInstanceState(bundle.getParcelable(BUNDLE_RV_LAYOUT_MANAGER))
+        } ?: this.run {
+            // If no saved instance state, set a new layout manager
+            rv.layoutManager = GridLayoutManager(
+                this.context,
+                this.layoutState.spanCount,
+                this.layoutState.orientation,
+                false
+            )
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
@@ -72,22 +88,23 @@ abstract class AbstractSelectorFragment<T : SelectorCellModel>(
         view.findViewById<TextView>(R.id.selectorTitle)?.text = this.title
 
         // Set up recycler view
-        val rv = view.findViewById(R.id.selectorList) as RecyclerView
-        // Get layout manager from saved state or create new
-        rv.layoutManager = savedInstanceState?.getParcelable(BUNDLE_RV_LAYOUT_MANAGER)
-            ?: GridLayoutManager(
+        this.rv = view.findViewById(R.id.selectorList)
+        if (rv.layoutManager == null) {
+            rv.layoutManager = GridLayoutManager(
                 this.context,
                 this.layoutState.spanCount,
                 this.layoutState.orientation,
                 false
             )
+        }
         rv.adapter = SelectorFragmentAdapter(this.values, this.cellLayout)
 
         // Handle dynamic layout
         if (this.useDynamicLayout) {
             // Add the layout changer to it's frame if not there
-            childFragmentManager.findFragmentById(R.id.selectorLayoutChangerFrame) as? LayoutChangerFragment
-                ?: childFragmentManager.beginTransaction().also { transaction ->
+            val fragment = childFragmentManager.findFragmentById(R.id.selectorLayoutChangerFrame)
+            if (fragment !is LayoutChangerFragment) {
+                childFragmentManager.beginTransaction().also { transaction ->
                     transaction.add(
                         R.id.selectorLayoutChangerFrame,
                         LayoutChangerFragment(this.layoutState)
@@ -95,12 +112,10 @@ abstract class AbstractSelectorFragment<T : SelectorCellModel>(
 
                     transaction.commit()
                 }
+            }
 
             // Give the layout controller access to this fragment
             this.layoutState.observers.add(this)
-
-            //TODO TEST
-            view.findViewById<FrameLayout>(R.id.selectorLayoutChangerFrame).isEnabled = false
         }
 
         // Handle back button
@@ -128,8 +143,8 @@ abstract class AbstractSelectorFragment<T : SelectorCellModel>(
         this.layoutState.observers.remove(this)
         outState.putParcelable(BUNDLE_LAYOUT_CONTROLLER, this.layoutState)
 
-        // Save recyclerview state
-        this.layoutManager.onSaveInstanceState()?.also { lm ->
+        // Save recyclerview layout manager state if non null
+        this.rv.layoutManager?.onSaveInstanceState().also { lm ->
             outState.putParcelable(BUNDLE_RV_LAYOUT_MANAGER, lm)
         }
     }
@@ -137,7 +152,9 @@ abstract class AbstractSelectorFragment<T : SelectorCellModel>(
     @CallSuper
     override fun onUpdateOrientation(@RecyclerView.Orientation orientation: Int) {
         // Change the layout of the recyclerview
-        this.layoutManager.orientation = orientation
+        val lm = this.rv.layoutManager as? GridLayoutManager
+            ?: throw IllegalStateException("RecyclerView layout manager null")
+        lm.orientation = orientation
 
         // Change the adapter to use the new orientation cell layout
         val rv = this.view?.findViewById(R.id.selectorList) as? RecyclerView
@@ -148,7 +165,9 @@ abstract class AbstractSelectorFragment<T : SelectorCellModel>(
     @CallSuper
     override fun onUpdateSpanCount(spanCount: Int) {
         // Change the span count of the recyclerview
-        this.layoutManager.spanCount = spanCount
+        val lm = this.rv.layoutManager as? GridLayoutManager
+            ?: throw IllegalStateException("RecyclerView layout manager null")
+        lm.spanCount = spanCount
     }
 
     @CallSuper
@@ -182,4 +201,73 @@ abstract class AbstractSelectorFragment<T : SelectorCellModel>(
             val attr3: TextView = view.findViewById(R.id.fragmentSelectorCellAttr3)
         }
     }
+
+    /*
+    @SuppressLint("SetTextI18n")
+    inner class LayoutChangerFragment : Fragment(), LayoutStateObserver {
+
+        // Views
+        private lateinit var oneSpanBtn: Button
+        private lateinit var twoSpanBtn: Button
+        private lateinit var threeSpanBtn: Button
+        private lateinit var orientationBtn: Button
+
+        override fun onCreateView(
+            inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        ): View? {
+            // Inflate the layout for this fragment
+            val view = inflater.inflate(R.layout.fragment_layout_changer, container, false)
+
+            // Get references to views
+            this.oneSpanBtn = view.findViewById(R.id.oneSpanButton) as Button
+            this.twoSpanBtn = view.findViewById(R.id.twoSpanButton) as Button
+            this.threeSpanBtn = view.findViewById(R.id.threeSpanButton) as Button
+            this.orientationBtn = view.findViewById(R.id.swapOrientationButton) as Button
+
+            // Set button listeners
+            this.oneSpanBtn.setOnClickListener {
+                this@AbstractSelectorFragment.layoutState.spanCount = 1
+            }
+            this.twoSpanBtn.setOnClickListener {
+                this@AbstractSelectorFragment.layoutState.spanCount = 2
+            }
+            this.threeSpanBtn.setOnClickListener {
+                this@AbstractSelectorFragment.layoutState.spanCount = 3
+            }
+            this.orientationBtn.setOnClickListener {
+                this@AbstractSelectorFragment.layoutState.swapOrientation()
+            }
+
+            // Set layout controller observer and manually trigger once
+            this@AbstractSelectorFragment.layoutState.observers.add(this)
+            this.onUpdateOrientation(this@AbstractSelectorFragment.layoutState.orientation)
+            this.onUpdateSpanCount(this@AbstractSelectorFragment.layoutState.spanCount)
+
+            return view
+        }
+
+        override fun onDestroyView() {
+            super.onDestroyView()
+            this@AbstractSelectorFragment.layoutState.observers.remove(this)
+        }
+
+        override fun onUpdateOrientation(@RecyclerView.Orientation orientation: Int) {
+            when (orientation) {
+                LayoutState.HORIZONTAL -> {
+                    this.oneSpanBtn.text = "1 Row"
+                    this.twoSpanBtn.text = "2 Rows"
+                    this.threeSpanBtn.text = "3 Rows"
+                    this.orientationBtn.text = "Cols"
+                }
+                LayoutState.VERTICAL -> {
+                    this.oneSpanBtn.text = "1 Col"
+                    this.twoSpanBtn.text = "2 Cols"
+                    this.threeSpanBtn.text = "3 Cols"
+                    this.orientationBtn.text = "Rows"
+                }
+            }
+        }
+    }
+
+     */
 }

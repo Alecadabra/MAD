@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 class LayoutState(
     spanCount: Int = DEFAULT_SPAN_COUNT,
     @RecyclerView.Orientation orientation: Int = DEFAULT_ORIENTATION
-) : Parcelable {
+) : ObservableState<LayoutStateObserver>(), Parcelable {
 
     companion object {
         const val HORIZONTAL = RecyclerView.HORIZONTAL
@@ -20,9 +20,7 @@ class LayoutState(
         private const val DEFAULT_ORIENTATION = VERTICAL
         private const val DEFAULT_SPAN_COUNT = 2
 
-        /**
-         * Used for parceling.
-         */
+        // Parcelable implementation
         val CREATOR = object : Parcelable.Creator<LayoutState> {
             override fun createFromParcel(parcel: Parcel): LayoutState {
                 return LayoutState(parcel)
@@ -34,14 +32,11 @@ class LayoutState(
         }
     }
 
-    // Callbacks to the fragments
-    val observers: MutableSet<LayoutStateObserver> = mutableSetOf()
-
     var spanCount = spanCount
         set(value) {
             if (this.spanCount != value) {
                 field = value
-                this.observers.forEach { it.onUpdateSpanCount(value) }
+                notifyObservers { it.onUpdateSpanCount(value) }
             }
         }
 
@@ -53,7 +48,7 @@ class LayoutState(
             }
             if (this.orientation != value) {
                 field = value
-                this.observers.forEach { it.onUpdateOrientation(value) }
+                notifyObservers { it.onUpdateOrientation(value) }
             }
         }
 
@@ -64,6 +59,7 @@ class LayoutState(
             else -> throw IllegalStateException("Invalid orientation '${this.orientation}'")
         }
 
+    // Parcelable implementation
     private constructor(parcel: Parcel) : this(
         spanCount = parcel.readInt(),
         orientation = parcel.readInt()
@@ -77,11 +73,13 @@ class LayoutState(
         }
     }
 
+    // Parcelable implementation
     override fun writeToParcel(parcel: Parcel, flags: Int) = parcel.let {
         it.writeInt(this.spanCount)
         it.writeInt(this.orientation)
     }
 
+    // Parcelable implementation
     override fun describeContents() = 0
 
     enum class Orientation {

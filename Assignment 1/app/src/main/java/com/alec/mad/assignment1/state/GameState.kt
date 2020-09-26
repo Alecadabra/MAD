@@ -1,55 +1,67 @@
 package com.alec.mad.assignment1.state
 
+import android.os.SystemClock
 import com.alec.mad.assignment1.R
 import com.alec.mad.assignment1.model.Flag
 import com.alec.mad.assignment1.model.Question
 import kotlin.random.Random
 
-class GameState {
+class GameState(
+    observers: Collection<GameStateObserver>
+) : ObservableState<GameStateObserver>(observers) {
+
+    // When no observers are given
+    constructor() : this(setOf())
+
     /**
      * Immutable storage for flags.
      */
-    val flags: List<Flag> = Init.initFlags()
+    val flags: List<Flag>
 
     /**
      * The player's mutable point count. Changes are observed and used to update playerCondition.
      */
-    var playerPoints: Int = Init.initPlayerPoints()
+    var playerPoints: Int = 0
         set(value) {
-            // Update player condition
-            playerCondition = when {
-                value <= 0 -> PlayerCondition.LOST
-                value >= targetPoints -> PlayerCondition.WON
-                else -> PlayerCondition.PLAYING
-            }
+            // Get player condition before
+            val originalCondition = this.playerCondition
 
             field = value
 
-            // Notify observers
-            observers.forEach { it.onUpdatePlayerPoints(value) }
+            notifyObservers { it.onUpdatePlayerPoints(value) }
+
+            val afterCondition = this.playerCondition
+            if (originalCondition != afterCondition) {
+                notifyObservers { it.onUpdatePlayerCondition(afterCondition) }
+            }
+        }
+
+    /**
+     * The player's state. Automatically set when playerPoints is changed.
+     */
+    val playerCondition: PlayerCondition
+        get() = when {
+            this.playerPoints <= 0 -> PlayerCondition.LOST
+            this.playerPoints >= this.targetPoints -> PlayerCondition.WON
+            else -> PlayerCondition.PLAYING
         }
 
     /**
      * No. of points to reach to win.
      */
-    val targetPoints: Int = Init.initTargetPoints(playerPoints)
+    val targetPoints: Int
 
-    /**
-     * The player's state. Automatically set when playerPoints is changed.
-     */
-    var playerCondition: PlayerCondition = PlayerCondition.PLAYING
-        private set(value) {
-            if (field != value) {
-                // Only notify if value changes
-
-                // Notify observers
-                this.observers.forEach { it.onUpdatePlayerCondition(value) }
-            }
-
-            field = value
-        }
-
-    val observers: MutableSet<GameStateObserver> = mutableSetOf()
+    /* Initialisation handled with a local variable of GameStateInitializer so that all of it's
+     * data doesn't stick around in memory after initialisation */
+    init {
+        val init = GameStateInitializer(Random(SystemClock.currentThreadTimeMillis()))
+        this.flags = init.initFlags()
+        this.targetPoints = init.initTargetPoints()
+        this.playerPoints = init.initPlayerPoints()
+        /* Note: targetPoints must be initialised before playerPoints, because ints auto-initialise
+         * to 0 on the JVM, and if targetPoints and playerPoints are both zero, the player has
+         * technically won before the game starts */
+    }
 
     /**
      * The player's state. This is automatically updated when playerPoints is updated.
@@ -62,38 +74,45 @@ class GameState {
         WON,
 
         /** Player's points have decreased to zero. */
-        LOST;
+        LOST
     }
 
     /**
      * Used to initialise the game state.
      */
-    private object Init {
+    private class GameStateInitializer(rng: Random) {
+
+        val stateGen = GameStateRandomGen(rng)
+        val flagHandler = FlagHandler(stateGen)
+        val questionHandler = QuestionHandler(stateGen, flagHandler)
 
         /**
          * Builds a list of flags.
          */
-        fun initFlags(): List<Flag> = Flags.getFlags(this::initFlagQuestions)
+        fun initFlags(): List<Flag> = this.flagHandler.getFlags(this::initFlagQuestions)
 
         /**
          * Gets a player's starting points.
          */
-        fun initPlayerPoints(): Int = Rand.nextStartingPoints
+        fun initPlayerPoints(): Int = this.stateGen.nextStartingPoints
 
         /**
          * Gets a player's target points.
          */
-        fun initTargetPoints(playerPoints: Int): Int = Rand.nextTargetPoints
+        fun initTargetPoints(): Int = this.stateGen.nextTargetPoints
 
         /**
          * Builds a list of questions for a flag of given name.
          */
-        fun initFlagQuestions(flagName: String) = Rand.getNextFlagQuestions(flagName)
+        fun initFlagQuestions(flagName: String) = this.questionHandler.getQuestions(flagName)
 
         /**
          * Holds the information necessary to create a flag.
          */
-        private class FlagTemplate(val name: String, val drawableId: Int)
+        private class FlagTemplate(
+            val name: String,
+            val drawableId: Int
+        )
 
         /**
          * Holds the information necessary to create a question for a flag.
@@ -107,73 +126,57 @@ class GameState {
         /**
          * Handles random number generation.
          */
-        private object Rand {
+        private class GameStateRandomGen(val rng: Random) {
 
-            // Constants for ranges of different randomly generated values
-            const val STARTING_POINTS_LOWER = 0
-            const val STARTING_POINTS_UPPER = 10
-            const val TARGET_POINTS_LOWER = 30
-            const val TARGET_POINTS_UPPER = 50
-            const val NO_QUESTIONS_LOWER = 5
-            const val NO_QUESTIONS_UPPER = 10
-            const val QUESTION_POINTS_LOWER = 5
-            const val QUESTION_POINTS_UPPER = 15
-            const val QUESTION_PENALTY_LOWER = 0
-            const val QUESTION_PENALTY_UPPER = 10
-            const val QUESTIONS_OPTIONS = 3
-            const val QUESTION_SPECIAL_PROB = 5
-            const val QUESTION_ANSWERS_LOWER = 2
-            const val QUESTION_ANSWERS_UPPER = 4
-
-            /** Random number generator */
-            val rng: Random = Random.Default
+            companion object {
+                // Constants for ranges of different randomly generated values
+                const val STARTING_POINTS_LOWER = 10
+                const val STARTING_POINTS_UPPER = 20
+                const val TARGET_POINTS_LOWER = 40
+                const val TARGET_POINTS_UPPER = 50
+                const val NO_QUESTIONS_LOWER = 5
+                const val NO_QUESTIONS_UPPER = 11
+                const val QUESTION_POINTS_LOWER = 5
+                const val QUESTION_POINTS_UPPER = 16
+                const val QUESTION_PENALTY_LOWER = 0
+                const val QUESTION_PENALTY_UPPER = 11
+                const val QUESTION_SPECIAL_PROB = 5
+                const val QUESTION_ANSWERS_LOWER = 2
+                const val QUESTION_ANSWERS_UPPER = 4
+            }
 
             /** Get the next value for player starting points */
             val nextStartingPoints
-                get() = rng.nextInt(
-                    STARTING_POINTS_LOWER,
-                    STARTING_POINTS_UPPER + 1
-                )
+                get() = rng.nextInt(STARTING_POINTS_LOWER, STARTING_POINTS_UPPER)
 
-            fun getNextFlagQuestions(flagName: String) = Questions.getQuestions(flagName)
-
-            val nextTargetPoints get() = rng.nextInt(TARGET_POINTS_LOWER, TARGET_POINTS_UPPER)
+            val nextTargetPoints
+                get() = rng.nextInt(TARGET_POINTS_LOWER, TARGET_POINTS_UPPER)
 
             /** Get the next value for the number of questions for a flag */
-            val nextNoQuestions get() = rng.nextInt(NO_QUESTIONS_LOWER, NO_QUESTIONS_UPPER + 1)
+            val nextNoQuestions
+                get() = rng.nextInt(NO_QUESTIONS_LOWER, NO_QUESTIONS_UPPER)
 
             /** Get the next value for the point value of a question */
             val nextQuestionPoints
-                get() = rng.nextInt(
-                    QUESTION_POINTS_LOWER,
-                    QUESTION_POINTS_UPPER + 1
-                )
+                get() = rng.nextInt(QUESTION_POINTS_LOWER, QUESTION_POINTS_UPPER)
 
             /** Get the next value for the penalty value of a question */
             val nextQuestionPenalty
-                get() = rng.nextInt(
-                    QUESTION_PENALTY_LOWER,
-                    QUESTION_PENALTY_UPPER + 1
-                )
+                get() = rng.nextInt(QUESTION_PENALTY_LOWER, QUESTION_PENALTY_UPPER)
 
             /** Get the next value for the isSpecial of a question */
-            val nextQuestionIsSpecial get() = rng.nextInt(0, QUESTION_SPECIAL_PROB) == 0
-
-            /** Get the next value to use to select the question initializer to use for a question */
-            val nextQuestionOption get() = rng.nextInt(0, QUESTIONS_OPTIONS)
+            val nextQuestionIsSpecial
+                get() = rng.nextInt(0, QUESTION_SPECIAL_PROB) == 0
 
             /** Get the next number of answers for a question to have */
             val nextNumAnswers
-                get() = rng.nextInt(
-                    QUESTION_ANSWERS_LOWER,
-                    QUESTION_ANSWERS_UPPER + 1
-                )
+                get() = rng.nextInt(QUESTION_ANSWERS_LOWER, QUESTION_ANSWERS_UPPER)
         }
 
         /**
          * Handles flags.
          */
-        private object Flags {
+        private class FlagHandler(val stateGen: GameStateRandomGen) {
             /** List of pairs of name, drawable of each flag */
             val flagTemplates = listOf(
                 FlagTemplate("Australia", R.drawable.flag_au),
@@ -192,7 +195,7 @@ class GameState {
                 FlagTemplate("Russia", R.drawable.flag_ru),
                 FlagTemplate("The United Kingdom", R.drawable.flag_uk),
                 FlagTemplate("USA", R.drawable.flag_us)
-            ).shuffled(Rand.rng)
+            ).shuffled(this.stateGen.rng)
 
             private var flagIterator: Iterator<FlagTemplate> = flagTemplates.iterator()
 
@@ -204,7 +207,7 @@ class GameState {
             fun nextFlagWhere(check: (FlagTemplate) -> Boolean): FlagTemplate {
                 if (!flagIterator.hasNext()) {
                     // If the iterator is at it's end, reshuffle the flags and loop back around
-                    flagIterator = flagTemplates.shuffled(Rand.rng).iterator()
+                    flagIterator = flagTemplates.shuffled(this.stateGen.rng).iterator()
                 }
 
                 val flag = flagIterator.next()
@@ -217,7 +220,7 @@ class GameState {
                 }
             }
 
-            fun getFlags(qnGenerator: (String) -> List<Question>) =
+            inline fun getFlags(qnGenerator: (String) -> List<Question>) =
                 flagTemplates.map { flagTemplate ->
                     Flag(flagTemplate.name, qnGenerator(flagTemplate.name), flagTemplate.drawableId)
                 }
@@ -226,17 +229,20 @@ class GameState {
         /**
          * Handles questions.
          */
-        private object Questions {
+        private class QuestionHandler(
+            val stateGen: GameStateRandomGen, val flagHandler: FlagHandler
+        ) {
             /**
              * Generates a list of questions for the flag of given name.
              */
-            fun getQuestions(flagName: String) = List(Rand.nextNoQuestions) { idx ->
-                val qnTemplate = questionTemplateGenerators.random(Rand.rng)(flagName)
+            fun getQuestions(flagName: String) = List(this.stateGen.nextNoQuestions) { idx ->
+                val qnGenerator = questionTemplateGenerators.random(this.stateGen.rng)
+                val qnTemplate = qnGenerator(flagName)
                 Question(
                     idx + 1,
-                    Rand.nextQuestionPoints,
-                    Rand.nextQuestionPenalty,
-                    Rand.nextQuestionIsSpecial,
+                    this.stateGen.nextQuestionPoints,
+                    this.stateGen.nextQuestionPenalty,
+                    this.stateGen.nextQuestionIsSpecial,
                     qnTemplate.questionText,
                     qnTemplate.answers,
                     qnTemplate.correctAnswer
@@ -257,7 +263,7 @@ class GameState {
                 },
                 { flagName ->
                     QuestionTemplate( // 'Is this the flag of x' where the answer is no
-                        "Is this the flag of ${Flags.nextFlagWhere { it.name != flagName }.name}?",
+                        "Is this the flag of ${this.flagHandler.nextFlagWhere { it.name != flagName }.name}?",
                         listOf("Yes", "No"),
                         "No"
                     )
@@ -270,10 +276,10 @@ class GameState {
                             /* This generates a random number (as defined is nextNumAnswers) of
                             wrong answers and uses the spread operator (*) to pass them into the
                             listOf call as a flat list rather than nested */
-                            *Array(Rand.nextNumAnswers) {
-                                Flags.nextFlagWhere { it.name != flagName }.name
+                            *Array(this.stateGen.nextNumAnswers) {
+                                this.flagHandler.nextFlagWhere { it.name != flagName }.name
                             }
-                        ).shuffled(Rand.rng),
+                        ).shuffled(this.stateGen.rng),
                         flagName
                     )
                 }

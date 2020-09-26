@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.alec.mad.assignment1.fragment.MainMenuFragment
 import com.alec.mad.assignment1.fragment.StatsBarFragment
-import com.alec.mad.assignment1.state.GameState
 import com.alec.mad.assignment1.state.GameState.PlayerCondition
 import com.alec.mad.assignment1.state.GameStateObserver
 
@@ -16,19 +15,29 @@ class MainActivity : AppCompatActivity(), GameStateObserver {
         supportFragmentManager.also { fm ->
             fm.beginTransaction().also { transaction ->
                 // Add the starting screen to the game frame
-                transaction.add(
-                    R.id.gameFragmentFrame,
-                    MainMenuFragment("Welcome!")
-                )
+                val gameFragment = fm.findFragmentById(R.id.gameFragmentFrame)
+                // Only if there is nothing there
+                if (gameFragment == null) {
+                    transaction.add(
+                        R.id.gameFragmentFrame,
+                        MainMenuFragment("Welcome!")
+                    )
+                }
 
                 // Add the stats bar frame to it's frame
-                transaction.add(
-                    R.id.statsBarFrame,
-                    fm.findFragmentById(R.id.statsBarFrame) ?: StatsBarFragment()
-                )
+                val statsBarFragment = fm.findFragmentById(R.id.statsBarFrame)
+                // Only if there is nothing there or something that is not a stats bar
+                if (statsBarFragment == null || statsBarFragment !is StatsBarFragment) {
+                    transaction.add(
+                        R.id.statsBarFrame,
+                        StatsBarFragment()
+                    )
+                }
 
                 // Commit changes
-                transaction.commit()
+                if (!transaction.isEmpty) {
+                    transaction.commit()
+                }
             }
         }
 
@@ -70,6 +79,7 @@ class MainActivity : AppCompatActivity(), GameStateObserver {
             }
 
             // Restart the game!
+            GameStateSingleton.state.observers.remove(this)
             GameStateSingleton.reset()
             GameStateSingleton.state.observers.add(this)
         }

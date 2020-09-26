@@ -13,8 +13,17 @@ import com.alec.mad.assignment1.fragment.selector.FlagQuestionSelectorFragment
 import com.alec.mad.assignment1.gameState
 
 @SuppressLint("SetTextI18n")
-class MainMenuFragment(private val message: String) : Fragment() {
+class MainMenuFragment(
+    /** The message to display at the top of the screen */
+    private val message: String
+) : Fragment() {
 
+    init {
+        // Because the default constructor has parameters, which android does not like.
+        this.retainInstance = true
+    }
+
+    // Views
     private lateinit var messageView: TextView
     private lateinit var pointsReadout: TextView
     private lateinit var startBtn: Button
@@ -26,34 +35,54 @@ class MainMenuFragment(private val message: String) : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_starting_screen, container, false)
 
+        // Get view references
         this.messageView = view.findViewById(R.id.mainMenuMessage) as TextView
         this.pointsReadout = view.findViewById(R.id.mainMenuPointsReadout) as TextView
         this.startBtn = view.findViewById(R.id.startButton) as Button
 
+        // Get values for points
         val pts = this.gameState.playerPoints
         val target = this.gameState.targetPoints
 
+        // Update views
         this.messageView.text = this.message
         this.pointsReadout.text = "New Game: You have $pts points, reach $target to win"
         this.startBtn.setOnClickListener {
             // Change to flag selection screen
-            activity?.supportFragmentManager?.beginTransaction()?.also { transaction ->
+            fragmentManager?.also { fm ->
+                fm.beginTransaction().also { transaction ->
 
-                // Replace the activity's fragment frame with the question selector
-                transaction.replace(
-                    R.id.gameFragmentFrame,
-                    FlagQuestionSelectorFragment()
-                )
+                    // Replace the activity's fragment frame with the question selector
+                    val gameFragment = fm.findFragmentById(R.id.gameFragmentFrame)
+                    if (gameFragment == null || gameFragment !is FlagQuestionSelectorFragment) {
+                        transaction.replace(
+                            R.id.gameFragmentFrame,
+                            FlagQuestionSelectorFragment()
+                        )
+                    }
 
-                // Refresh the stats bar with a new one for this new game state
-                transaction.replace(
-                    R.id.statsBarFrame,
-                    StatsBarFragment()
-                )
+                    // Refresh the stats bar with a new one for this new game state
+                    //TODO fm.findFragmentById(R.id.statsBarFrame)?.onDestroyView()
+                    transaction.replace(
+                        R.id.statsBarFrame,
+                        StatsBarFragment()
+                    )
+                    /* Old version
+                    val statsBarFragment = fm.findFragmentById(R.id.statsBarFrame)
+                    if (statsBarFragment == null) {
+                        transaction.replace(
+                            R.id.statsBarFrame,
+                            StatsBarFragment()
+                        )
+                    }
+                     */
 
-                // Commit changes
-                transaction.commit()
-            } ?: throw IllegalStateException("Null activity / fragment manager")
+                    // Commit changes
+                    if (!transaction.isEmpty) {
+                        transaction.commit()
+                    }
+                }
+            }
         }
 
         return view

@@ -16,6 +16,12 @@ import com.alec.mad.assignment1.state.LayoutStateObserver
 class LayoutChangerFragment(private val layoutState: LayoutState) : Fragment(),
     LayoutStateObserver {
 
+    init {
+        // Because the default constructor has parameters, which android does not like.
+        this.retainInstance = true
+    }
+
+    // Views
     private lateinit var oneSpanBtn: Button
     private lateinit var twoSpanBtn: Button
     private lateinit var threeSpanBtn: Button
