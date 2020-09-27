@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/fragmentSelectorCell"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
@@ -22,9 +21,12 @@
         android:padding="16dp"
         android:scaleType="fitCenter"
         android:adjustViewBounds="true"
-        android:src="@android:color/transparent" />
+        android:src="@android:color/transparent"
+        android:foreground="?attr/selectableItemBackground"
+        tools:ignore="UnusedAttribute" />
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/fragmentSelectorCellText"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -33,29 +35,6 @@
         app:layout_constraintTop_toBottomOf="@+id/fragmentSelectorCellImage"
         app:layout_constraintBottom_toTopOf="@+id/fragmentSelectorCellImage"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/fragmentSelectorCellImage">
+        app:layout_constraintStart_toStartOf="@+id/fragmentSelectorCellImage" />
 
-
-        <TextView
-            android:id="@+id/fragmentSelectorCellAttr1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Q1"
-            android:textAppearance="?attr/textAppearanceListItem" />
-
-        <TextView
-            android:id="@+id/fragmentSelectorCellAttr2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Points: x"
-            android:textAppearance="?attr/textAppearanceListItem" />
-
-        <TextView
-            android:id="@+id/fragmentSelectorCellAttr3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Penalty: y"
-            android:textAppearance="?attr/textAppearanceListItem" />
-
-    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

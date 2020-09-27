@@ -1,7 +1,17 @@
 package com.alec.mad.assignment1.state
 
+/**
+ * The observer pattern; implementing classes can subscribe to changes to playerPoints and/or
+ * playerCondition.
+ */
 interface GameStateObserver {
-    fun onUpdatePlayerPoints(playerPoints: Int) { }
+    /**
+     * Called when the value for playerPoints is changed.
+     */
+    fun onUpdatePlayerPoints(playerPoints: Int) {}
 
-    fun onUpdatePlayerCondition(playerCondition: GameState.PlayerCondition) { }
+    /**
+     * Called when the player condition changes.
+     */
+    fun onUpdatePlayerCondition(playerCondition: GameState.PlayerCondition) {}
 }

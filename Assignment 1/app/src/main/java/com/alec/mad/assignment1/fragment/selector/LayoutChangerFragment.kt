@@ -1,17 +1,21 @@
-package com.alec.mad.assignment1.fragment
+package com.alec.mad.assignment1.fragment.selector
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.alec.mad.assignment1.R
 import com.alec.mad.assignment1.state.LayoutState
 import com.alec.mad.assignment1.state.LayoutStateObserver
 
+/**
+ * Held in AbstractSelectorFragment when useDynamicLayout is true. Changes the layout of the
+ * recycler view in the selector fragment using it's LayoutState reference.
+ */
 @SuppressLint("SetTextI18n")
 class LayoutChangerFragment(private val layoutState: LayoutState) : Fragment(),
     LayoutStateObserver {
@@ -45,7 +49,7 @@ class LayoutChangerFragment(private val layoutState: LayoutState) : Fragment(),
         this.threeSpanBtn.setOnClickListener { this.layoutState.spanCount = 3 }
         this.orientationBtn.setOnClickListener { this.layoutState.swapOrientation() }
 
-        // Set layout controller observer and manually trigger once
+        // Set layout controller observer and manually trigger self to set initial values
         this.layoutState.observers.add(this)
         this.onUpdateOrientation(this.layoutState.orientation)
         this.onUpdateSpanCount(this.layoutState.spanCount)
@@ -55,6 +59,8 @@ class LayoutChangerFragment(private val layoutState: LayoutState) : Fragment(),
 
     override fun onDestroyView() {
         super.onDestroyView()
+
+        // Unregister self as observer
         this.layoutState.observers.remove(this)
     }
 

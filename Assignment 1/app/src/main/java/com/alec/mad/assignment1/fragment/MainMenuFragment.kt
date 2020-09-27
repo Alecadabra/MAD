@@ -8,13 +8,16 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.alec.mad.assignment1.GameSingleton
 import com.alec.mad.assignment1.R
-import com.alec.mad.assignment1.fragment.selector.FlagQuestionSelectorFragment
-import com.alec.mad.assignment1.gameState
+import com.alec.mad.assignment1.fragment.selector.derived.FlagQuestionSelectorFragment
 
+/**
+ * The screen shown before a game starts.
+ */
 @SuppressLint("SetTextI18n")
 class MainMenuFragment(
-    /** The message to display at the top of the screen */
+    /** The message to display */
     private val message: String
 ) : Fragment() {
 
@@ -40,9 +43,9 @@ class MainMenuFragment(
         this.pointsReadout = view.findViewById(R.id.mainMenuPointsReadout) as TextView
         this.startBtn = view.findViewById(R.id.startButton) as Button
 
-        // Get values for points
-        val pts = this.gameState.playerPoints
-        val target = this.gameState.targetPoints
+        // Get values to display
+        val pts = GameSingleton.state.playerPoints
+        val target = GameSingleton.state.targetPoints
 
         // Update views
         this.messageView.text = this.message
@@ -52,7 +55,8 @@ class MainMenuFragment(
             fragmentManager?.also { fm ->
                 fm.beginTransaction().also { transaction ->
 
-                    // Replace the activity's fragment frame with the question selector
+                    // Replace the activity's fragment frame with the question selector if not
+                    // already there
                     val gameFragment = fm.findFragmentById(R.id.gameFragmentFrame)
                     if (gameFragment == null || gameFragment !is FlagQuestionSelectorFragment) {
                         transaction.replace(
@@ -62,25 +66,13 @@ class MainMenuFragment(
                     }
 
                     // Refresh the stats bar with a new one for this new game state
-                    //TODO fm.findFragmentById(R.id.statsBarFrame)?.onDestroyView()
                     transaction.replace(
                         R.id.statsBarFrame,
                         StatsBarFragment()
                     )
-                    /* Old version
-                    val statsBarFragment = fm.findFragmentById(R.id.statsBarFrame)
-                    if (statsBarFragment == null) {
-                        transaction.replace(
-                            R.id.statsBarFrame,
-                            StatsBarFragment()
-                        )
-                    }
-                     */
 
                     // Commit changes
-                    if (!transaction.isEmpty) {
-                        transaction.commit()
-                    }
+                    transaction.commit()
                 }
             }
         }

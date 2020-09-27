@@ -7,15 +7,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.alec.mad.assignment1.GameSingleton
 import com.alec.mad.assignment1.R
-import com.alec.mad.assignment1.gameState
 import com.alec.mad.assignment1.state.GameState.PlayerCondition
 import com.alec.mad.assignment1.state.GameStateObserver
 
+/**
+ * Displays a readout of the player's current points, and if they have won or lost.
+ */
 @SuppressLint("SetTextI18n")
 class StatsBarFragment : Fragment(), GameStateObserver {
 
-    private lateinit var statusReadout: TextView
+    // Views
+    private lateinit var pointsReadout: TextView
+    private lateinit var conditionReadout: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -23,11 +28,14 @@ class StatsBarFragment : Fragment(), GameStateObserver {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_stats_bar, container, false)
 
-        this.statusReadout = view.findViewById(R.id.statsBarPointsReadout) as TextView
+        // Get view references
+        this.pointsReadout = view.findViewById(R.id.statsBarPointsReadout)
+        this.conditionReadout = view.findViewById(R.id.statsBarConditionReadout)
 
-        this.gameState.observers.add(this)
-        this.onUpdatePlayerPoints(this.gameState.playerPoints)
-        this.onUpdatePlayerCondition(this.gameState.playerCondition)
+        // Observe changes to the game state and manually update with initial values
+        GameSingleton.state.observers.add(this)
+        this.onUpdatePlayerPoints(GameSingleton.state.playerPoints)
+        this.onUpdatePlayerCondition(GameSingleton.state.playerCondition)
 
         return view
     }
@@ -35,27 +43,19 @@ class StatsBarFragment : Fragment(), GameStateObserver {
     override fun onDestroyView() {
         super.onDestroyView()
 
-        println("I'm dying")
-        this.gameState.observers.remove(this)
+        // Deregister self from updates
+        GameSingleton.state.observers.remove(this)
     }
 
     override fun onUpdatePlayerPoints(playerPoints: Int) {
-        // Only handles changes where the player has not won or lost
-        if (this.gameState.playerCondition == PlayerCondition.PLAYING) {
-            val remaining = this.gameState.targetPoints - playerPoints
-
-            this.statusReadout.text = "You have $playerPoints points, $remaining more to win!"
-        }
+        this.pointsReadout.text = "Points: $playerPoints"
     }
 
     override fun onUpdatePlayerCondition(playerCondition: PlayerCondition) {
-        // Only handles changes when the player has won or lost
-        if (playerCondition != PlayerCondition.PLAYING) {
-            this.statusReadout.text = when (playerCondition) {
-                PlayerCondition.LOST -> "You are dead. No big surprise"
-                PlayerCondition.PLAYING -> this.statusReadout.text // Handled by onUpdatePlayerPoints
-                PlayerCondition.WON -> "You won!"
-            }
+        this.conditionReadout.text = when (playerCondition) {
+            PlayerCondition.LOST -> "You lost :("
+            PlayerCondition.PLAYING -> "Reach ${GameSingleton.state.targetPoints} points to win!"
+            PlayerCondition.WON -> "You won!"
         }
     }
 }

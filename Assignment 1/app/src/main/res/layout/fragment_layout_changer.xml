@@ -8,7 +8,7 @@
     android:orientation="horizontal"
     style="?android:attr/borderlessButtonStyle"
     android:paddingHorizontal="0dp"
-    tools:context=".fragment.LayoutChangerFragment">
+    tools:context=".fragment.selector.LayoutChangerFragment">
 
     <Button
         android:id="@+id/oneSpanButton"

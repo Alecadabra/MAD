@@ -1,12 +1,11 @@
 package com.alec.mad.assignment1
 
-import androidx.fragment.app.Fragment
 import com.alec.mad.assignment1.state.GameState
 
 /**
  * Simply holds a static reference to the current game state for simplicity.
  */
-object GameStateSingleton {
+object GameSingleton {
     /**
      * The current game state.
      */
@@ -17,13 +16,8 @@ object GameStateSingleton {
      * Reset the game.
      */
     fun reset() {
+        // Maintain observers
         val observers = state.observers
         this.state = GameState(observers)
     }
 }
-
-/**
- * Allows all fragments to access GameStateSingleton.state with a simple this.gameState.
- */
-val Fragment.gameState
-    inline get() = GameStateSingleton.state

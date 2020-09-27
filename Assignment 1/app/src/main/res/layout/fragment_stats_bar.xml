@@ -2,7 +2,7 @@
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     tools:context=".fragment.StatsBarFragment"
     android:orientation="horizontal"
     android:layout_gravity="center"
@@ -12,6 +12,13 @@
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/statsBarPointsReadout"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent"
+        android:paddingHorizontal="8dp" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/statsBarConditionReadout"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:paddingHorizontal="8dp" />
 
 </androidx.appcompat.widget.LinearLayoutCompat>

@@ -2,8 +2,11 @@ package com.alec.mad.assignment1.model
 
 import com.alec.mad.assignment1.fragment.selector.SelectorCellModel
 
+/**
+ * A flag for a country, holds questions about it and it's image drawable ID. Implements
+ * [SelectorCellModel] so that it can be held in an AbstractSelectorFragment.
+ */
 class Flag(
-    name: String /* Not used */,
     val questions: List<Question>,
     override val imageSrc: Int,
 ) : SelectorCellModel {
