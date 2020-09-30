@@ -1,0 +1,62 @@
+package com.alec.mad.p5.demo
+
+import android.app.Activity
+import android.content.Intent
+import android.graphics.Bitmap
+import android.os.Bundle
+import android.provider.MediaStore
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageView
+import com.alec.mad.p5.R
+
+
+class ThumbnailFragment : Fragment() {
+
+    private lateinit var btn: Button
+    private lateinit var image: ImageView
+
+    private val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflate the layout for this fragment
+        val view = inflater.inflate(R.layout.fragment_thumbnail, container, false)
+
+        this.btn = view.findViewById(ID.BTN)
+        this.image = view.findViewById(ID.IMAGE)
+
+        this.btn.text = getString(R.string.thumbnailBtnText)
+
+        this.btn.setOnClickListener { startActivityForResult(this.intent, Code.THUMB_REQUEST) }
+
+        return view
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                Code.THUMB_REQUEST -> {
+                    val bmp = data?.extras?.get("data") as? Bitmap
+                    if (bmp != null) {
+                        this.image.setImageBitmap(bmp)
+                    }
+                }
+            }
+        }
+    }
+
+    object ID {
+        const val BTN = R.id.thumbnailBtn
+        const val IMAGE = R.id.thumbnailImage
+    }
+
+    private object Code {
+        const val THUMB_REQUEST = 1
+    }
+}
