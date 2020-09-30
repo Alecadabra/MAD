@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">P5 - App Interactions</string>
+
+    <string name="phoneLocationPhoneTitle">Enter a phone number to call</string>
+    <string name="phoneLocationLocationTitle">Enter a longitude, comma, latitude</string>
+    <string name="phoneLocationPhoneError">Please enter a valid phone number</string>
+    <string name="phoneLocationLocationError">Please enter a valid lat and long</string>
+    <string name="phoneLocationPhoneBtnText">Dial phone number</string>
+    <string name="phoneLocationLocationBtnText">View location</string>
+
+    <string name="thumbnailBtnText">Take picture</string>
+</resources>
