@@ -35,19 +35,19 @@ class MainMenuFragment : Fragment() {
         this.title.text = "Select a demo"
         this.btnPhoneLocation.text = "Phone calling and map location"
         this.btnThumbnail.text = "Take a thumbnail picture"
-        this.btnContact.text = "-"
+        this.btnContact.text = "Select a contact"
         this.btnBigPhoto.text = "-"
 
         this.btnPhoneLocation.setOnClickListener { start(PhoneLocationFragment()) }
         this.btnThumbnail.setOnClickListener { start(ThumbnailFragment()) }
-        this.btnContact.setOnClickListener { TODO("Stub") }
+        this.btnContact.setOnClickListener { start(ContactFragment()) }
         this.btnBigPhoto.setOnClickListener { TODO("Stub") }
 
         return view
     }
 
     private fun start(fragment: Fragment) = fragmentManager?.beginTransaction()?.also { transact ->
-        transact.replace(MainActivity.ID.FRAME, fragment)
+        transact.replace(MainActivity.Id.FRAME, fragment)
         transact.addToBackStack(null)
         transact.commit()
     }

@@ -1,6 +1,7 @@
 package com.alec.mad.p5.demo
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -45,11 +46,26 @@ class PhoneLocationFragment : Fragment() {
         this.phoneBtn.text = getString(R.string.phoneLocationPhoneBtnText)
         this.locationBtn.text = getString(R.string.phoneLocationLocationBtnText)
 
+        this.phoneBtn.hint = getString(R.string.phoneLocationPhoneEditTextHint)
+        this.locationBtn.hint = getString(R.string.phoneLocationLocationEditTextHint)
+
         this.phoneBtn.setOnClickListener {
             phoneHandler(this.phoneEditText.text.toString())
         }
         this.locationBtn.setOnClickListener {
             locationHandler(this.locationEditText.text.toString())
+        }
+
+        // Disable buttons if needed
+        activity?.packageManager?.also { pm ->
+            this.phoneBtn.isEnabled = pm.resolveActivity(
+                this.phoneIntent,
+                PackageManager.MATCH_DEFAULT_ONLY
+            ) != null
+            this.locationBtn.isEnabled = pm.resolveActivity(
+                this.locationIntent,
+                PackageManager.MATCH_DEFAULT_ONLY
+            ) != null
         }
 
         return view
@@ -68,7 +84,7 @@ class PhoneLocationFragment : Fragment() {
 
     private fun locationHandler(locStr: String) {
         val splitList = locStr.replace(" ", "").split(",", limit = 2)
-            // Remove whitespace and split into two strings
+        // Remove whitespace and split into two strings
 
         val latitude = runCatching { splitList[0].toFloatOrNull() }.getOrNull()
         val longitude = runCatching { splitList[1].toFloatOrNull() }.getOrNull()
@@ -77,8 +93,7 @@ class PhoneLocationFragment : Fragment() {
             // Error case
             val toastText = getString(R.string.phoneLocationLocationError)
             Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show()
-        }
-        else {
+        } else {
             this.locationIntent.data = Uri.parse("geo:$latitude,$longitude")
             startActivity(this.locationIntent)
         }

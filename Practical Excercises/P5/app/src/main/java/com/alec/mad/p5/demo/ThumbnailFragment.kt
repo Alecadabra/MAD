@@ -2,6 +2,7 @@ package com.alec.mad.p5.demo
 
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.provider.MediaStore
@@ -11,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import com.alec.mad.p5.MainActivity
 import com.alec.mad.p5.R
 
 
@@ -33,7 +35,17 @@ class ThumbnailFragment : Fragment() {
 
         this.btn.text = getString(R.string.thumbnailBtnText)
 
-        this.btn.setOnClickListener { startActivityForResult(this.intent, Code.THUMB_REQUEST) }
+        this.btn.setOnClickListener {
+            startActivityForResult(this.intent, MainActivity.RequestCodes.THUMBNAIL)
+        }
+
+        // Disable button if needed
+        activity?.packageManager?.also { pm ->
+            this.btn.isEnabled = pm.resolveActivity(
+                this.intent,
+                PackageManager.MATCH_DEFAULT_ONLY
+            ) != null
+        }
 
         return view
     }
@@ -41,8 +53,8 @@ class ThumbnailFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
-                Code.THUMB_REQUEST -> {
-                    val bmp = data?.extras?.get("data") as? Bitmap
+                MainActivity.RequestCodes.THUMBNAIL -> {
+                    val bmp = data?.extras?.get("data") as Bitmap?
                     if (bmp != null) {
                         this.image.setImageBitmap(bmp)
                     }
@@ -54,9 +66,5 @@ class ThumbnailFragment : Fragment() {
     object ID {
         const val BTN = R.id.thumbnailBtn
         const val IMAGE = R.id.thumbnailImage
-    }
-
-    private object Code {
-        const val THUMB_REQUEST = 1
     }
 }
