@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".demo.ThumbnailFragment">
+    tools:context=".demo.BigPhotoFragment">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -17,12 +17,12 @@
         android:paddingVertical="16dp">
 
         <Button
-            android:id="@+id/thumbnailBtn"
+            android:id="@+id/bigPhotoBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <ImageView
-            android:id="@+id/thumbnailImage"
+            android:id="@+id/bigPhotoImage"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:contentDescription="Captured image"

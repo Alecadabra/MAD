@@ -7,12 +7,12 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import com.alec.mad.p5.MainActivity
 import com.alec.mad.p5.R
 
@@ -116,13 +116,11 @@ class ContactFragment : Fragment() {
                 if (cursor.count > 0) {
                     cursor.moveToFirst()
                     localNullableEmail = cursor.getString(0)
-                        ?: throw IllegalStateException("Cursor did not have contents") // TODO DEBUG
                 }
-                else throw IllegalStateException("Cursor empty") // TODO DEBUG
-            } ?: throw IllegalStateException("Cursor was null") // TODO DEBUG
+            }
 
             return@let localNullableEmail
-        } ?: throw IllegalStateException("Query failed")
+        } ?: "None"
 
         phoneNum = activity?.contentResolver?.let { contentResolver ->
             var localNullablePhoneNum: String? = null
@@ -142,7 +140,7 @@ class ContactFragment : Fragment() {
             }
 
             return@let localNullablePhoneNum
-        } ?: throw IllegalStateException("Query failed")
+        } ?: "None"
 
         this.readout.text = """
                         Contact ID: $id

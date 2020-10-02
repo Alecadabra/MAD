@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity() {
     object RequestCodes {
         const val THUMBNAIL = 1
         const val CONTACT = 2
+        const val BIG_PHOTO = 3
     }
 
     object Id {

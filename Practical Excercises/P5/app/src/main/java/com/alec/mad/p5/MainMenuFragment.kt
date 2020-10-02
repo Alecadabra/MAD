@@ -26,22 +26,22 @@ class MainMenuFragment : Fragment() {
         // Inflate the layout for this fragment
         val view =  inflater.inflate(R.layout.fragment_main_menu, container, false)
 
-        this.title = view.findViewById(ID.TITLE)
-        this.btnPhoneLocation = view.findViewById(ID.BTN_PHONE_LOCATION)
-        this.btnThumbnail = view.findViewById(ID.BTN_THUMBNAIL)
-        this.btnContact = view.findViewById(ID.BTN_CONTACT)
-        this.btnBigPhoto = view.findViewById(ID.BTN_BIG_PHOTO)
+        this.title = view.findViewById(Id.TITLE)
+        this.btnPhoneLocation = view.findViewById(Id.BTN_PHONE_LOCATION)
+        this.btnThumbnail = view.findViewById(Id.BTN_THUMBNAIL)
+        this.btnContact = view.findViewById(Id.BTN_CONTACT)
+        this.btnBigPhoto = view.findViewById(Id.BTN_BIG_PHOTO)
 
         this.title.text = "Select a demo"
         this.btnPhoneLocation.text = "Phone calling and map location"
         this.btnThumbnail.text = "Take a thumbnail picture"
         this.btnContact.text = "Select a contact"
-        this.btnBigPhoto.text = "-"
+        this.btnBigPhoto.text = "Take a large picture"
 
         this.btnPhoneLocation.setOnClickListener { start(PhoneLocationFragment()) }
         this.btnThumbnail.setOnClickListener { start(ThumbnailFragment()) }
         this.btnContact.setOnClickListener { start(ContactFragment()) }
-        this.btnBigPhoto.setOnClickListener { TODO("Stub") }
+        this.btnBigPhoto.setOnClickListener { start(BigPhotoFragment()) }
 
         return view
     }
@@ -52,7 +52,7 @@ class MainMenuFragment : Fragment() {
         transact.commit()
     }
 
-    object ID {
+    object Id {
         const val TITLE = R.id.mainMenuTitle
         const val BTN_PHONE_LOCATION = R.id.mainMenuBtnPhoneLocation
         const val BTN_THUMBNAIL = R.id.mainMenuBtnThumbnail
