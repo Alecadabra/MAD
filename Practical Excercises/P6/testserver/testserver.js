@@ -1,7 +1,7 @@
 const PORT = 8000;
 const CHUNK_SIZE = 10;     // Send X bytes at a time
 const CHUNK_DELAY = 20;    // Wait Y ms between sending chunks
-const IGNORE_URL = true;   // If true, return data regardless of whether the URL is correct.
+const IGNORE_URL = false;   // If true, return data regardless of whether the URL is correct.
 const CORRUPTION_PROB = 0; // Probability (0-1) that the returned content will be corrupted.
 
 const REQUIRED_PATH = "/testwebservice/rest";
