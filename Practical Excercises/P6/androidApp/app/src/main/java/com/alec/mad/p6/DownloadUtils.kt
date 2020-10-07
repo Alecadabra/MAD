@@ -28,12 +28,9 @@ object DownloadUtils {
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Throws(IOException::class, GeneralSecurityException::class)
     fun addCertificate(context: Context, conn: HttpsURLConnection) {
-        /**
-         * Adapted in part from https://developer.android.com/training/articles/security-ssl#java
-         */
-        var cert: Certificate?
-        context.resources.openRawResource(R.raw.cert).use { `is` ->
-            cert = CertificateFactory.getInstance("X.509").generateCertificate(`is`)
+        // Adapted in part from https://developer.android.com/training/articles/security-ssl#java
+        val cert: Certificate = context.resources.openRawResource(R.raw.cert).use { inputStream ->
+            CertificateFactory.getInstance("X.509").generateCertificate(inputStream)
         }
         val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
         keyStore.load(null, null)
@@ -45,6 +42,6 @@ object DownloadUtils {
         val sslContext = SSLContext.getInstance("TLS")
         sslContext.init(null, tmf.trustManagers, null)
         conn.sslSocketFactory = sslContext.socketFactory
-        conn.hostnameVerifier = HostnameVerifier { _: String, _: SSLSession -> true }
+        conn.hostnameVerifier = HostnameVerifier { _, _ -> true }
     }
 }
