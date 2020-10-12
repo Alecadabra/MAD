@@ -15,7 +15,8 @@ Syllabus:
 
 ## [Assignment 1](Assignment%201)
 
-<!-- TODO -->
+A simple quiz app on flags. Demonstrates understanding of RecyclerView,
+fragments and data passing.
 
 ## [Assignment 2](Assignment%202)
 
