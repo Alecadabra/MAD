@@ -10,8 +10,7 @@ object State {
     fun initialise() {
         this.gameData = GameData(
             map = initialiseMap(),
-            money = Settings.initialMoney,
-            gameTime = 0
+            money = Settings.initialMoney
         )
     }
 

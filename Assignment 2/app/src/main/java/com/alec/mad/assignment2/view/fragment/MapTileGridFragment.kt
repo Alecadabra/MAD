@@ -23,7 +23,7 @@ class MapTileGridFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_map_tile_grid, container, false)
 
         // Set up recyclerview
-        val rv = view as? RecyclerView ?: throw IllegalStateException("View not RV")
+        val rv = view as RecyclerView
         rv.layoutManager = GridLayoutManager(
             context,
             Settings.mapHeight,
@@ -31,14 +31,18 @@ class MapTileGridFragment : Fragment() {
             false
         )
         rv.adapter = MapTileGridAdapter()
+
         return view
     }
 
     class MapTileGridAdapter : RecyclerView.Adapter<MapTileGridAdapter.MapTileViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MapTileViewHolder {
-            val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.fragment_map_tile, parent, false)
+            val view = LayoutInflater.from(parent.context).inflate(
+                R.layout.fragment_map_tile,
+                parent,
+                false
+            )
             return MapTileViewHolder(view, parent)
         }
 
@@ -55,6 +59,9 @@ class MapTileGridFragment : Fragment() {
             parent: ViewGroup
         ) : RecyclerView.ViewHolder(view) {
 
+            private val bgImageView: ImageView = view.findViewById(R.id.mapTileBgImage)
+            private val structureImageView: ImageView = view.findViewById(R.id.mapTileStructureImage)
+
             init {
                 // Make square
                 val size = parent.measuredHeight / Settings.mapHeight + 1
@@ -62,10 +69,11 @@ class MapTileGridFragment : Fragment() {
                     lp.width = size
                     lp.height = size
                 }
+
+                // Rotate bgImage randomly, just per recycler view tile not per bind
+                this.bgImageView.rotation = rightAngles.random()
             }
 
-            private val bgImageView: ImageView = view.findViewById(R.id.mapTileBgImage)
-            private val structureImageView: ImageView = view.findViewById(R.id.mapTileStructureImage)
             fun bindViewHolder(mapElement: MapElement) {
                 this.bgImageView.setImageResource(mapElement.bgImage)
                 mapElement.structure?.drawImageTo(this.structureImageView) ?: run {
@@ -73,5 +81,9 @@ class MapTileGridFragment : Fragment() {
                 }
             }
         }
+    }
+
+    companion object {
+        val rightAngles = setOf(0f, 90f, 180f, 270f)
     }
 }

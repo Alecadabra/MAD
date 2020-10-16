@@ -4,19 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.activity.MapActivity">
+    tools:context=".view.activity.MapActivity"
+    tools:ignore="ContentDescription,UnusedAttribute,HardcodedText">
 
     <FrameLayout
         android:id="@+id/mapActivityMapTileGridFrame"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/mapActivityStructureSelectorFrame"
+        app:layout_constraintBottom_toTopOf="@+id/mapActivityToolFrame"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <FrameLayout
-        android:id="@+id/mapActivityStructureSelectorFrame"
+        android:id="@+id/mapActivityToolFrame"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -26,16 +27,194 @@
 
     <TextView
         android:id="@+id/mapActivityToolText"
+        style="@style/Widget.AppCompat.Button.Small"
+        android:backgroundTint="@android:color/background_light"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingStart="16dp"
-        android:paddingEnd="0dp"
-        android:paddingBottom="16dp"
-        android:text="@string/hello_blank_fragment"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        app:layout_constraintBottom_toTopOf="@+id/mapActivityStructureSelectorFrame"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginBottom="16dp"
+        android:gravity="center_vertical"
+        android:text="Selected Tool\nBuild - Residential"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/mapActivityToolFrame"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/mapActivityToolSelector"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/mapActivityToolFrame"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:orientation="vertical"
+        style="@style/Widget.AppCompat.Button.Small"
+        android:backgroundTint="#ffffff">
+
+        <ImageButton
+            android:id="@+id/mapActivityToolSelectorResidential"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:paddingHorizontal="8dp"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_building4"/>
+
+        <ImageButton
+            android:id="@+id/mapActivityToolSelectorCommercial"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_building5" />
+
+        <ImageButton
+            android:id="@+id/mapActivityToolSelectorRoad"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_road_ew" />
+
+        <ImageButton
+            android:id="@+id/mapActivityToolSelectorDemolish"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:scaleType="fitXY"
+            tools:src="@android:drawable/btn_dialog" />
+
+        <ImageButton
+            android:id="@+id/mapActivityToolSelectorInfo"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:scaleType="fitXY"
+            tools:src="@android:drawable/ic_menu_info_details" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/mapActivityTimeStepLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/mapActivityToolFrame"
+        app:layout_constraintRight_toLeftOf="@+id/mapActivityToolSelector"
+        android:orientation="vertical"
+        style="@style/Widget.AppCompat.Button.Small"
+        android:backgroundTint="#ffffff"
+        android:layout_marginEnd="4dp">
+
+        <ImageButton
+            android:id="@+id/mapActivityTimeStep"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:scaleType="fitXY"
+            android:src="@android:drawable/ic_media_next" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/mapActivityStatusBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:paddingRight="0dp"
-        android:paddingLeft="16dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:padding="0dp"
+        android:orientation="vertical">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/mapActivityStatusBarTime"
+                style="@style/Widget.AppCompat.Button.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:backgroundTint="#ffffff"
+                android:text="Time: ?"
+                app:layout_constraintStart_toStartOf="parent"
+                android:paddingHorizontal="16dp"
+                android:textSize="12sp"/>
+
+            <TextView
+                android:id="@+id/mapActivityStatusBarPopulation"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                style="@style/Widget.AppCompat.Button.Small"
+                android:layout_gravity="center"
+                android:backgroundTint="#ffffff"
+                android:text="Population: ?"
+                app:layout_constraintStart_toEndOf="@+id/mapActivityStatusBarTime"
+                app:layout_constraintEnd_toStartOf="@id/mapActivityStatusBarTemperature"
+                android:paddingHorizontal="16dp"
+                android:textSize="12sp"/>
+
+            <TextView
+                android:id="@+id/mapActivityStatusBarTemperature"
+                style="@style/Widget.AppCompat.Button.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:backgroundTint="#ffffff"
+                android:text="Temp: ?"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:paddingHorizontal="16dp"
+                android:textSize="12sp"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/mapActivityStatusBarMoney"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                style="@style/Widget.AppCompat.Button.Small"
+                android:backgroundTint="#ffffff"
+                android:text="Money: ?"
+                app:layout_constraintStart_toStartOf="parent"
+                android:paddingHorizontal="16dp"
+                android:textSize="12sp"/>
+
+            <TextView
+                android:id="@+id/mapActivityStatusBarIncome"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                style="@style/Widget.AppCompat.Button.Small"
+                android:backgroundTint="#ffffff"
+                android:text="Income: ?"
+                app:layout_constraintStart_toEndOf="@id/mapActivityStatusBarMoney"
+                app:layout_constraintEnd_toStartOf="@+id/mapActivityStatusBarEmployment"
+                android:paddingHorizontal="16dp"
+                android:textSize="12sp"/>
+
+            <TextView
+                android:id="@+id/mapActivityStatusBarEmployment"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                style="@style/Widget.AppCompat.Button.Small"
+                android:backgroundTint="#ffffff"
+                android:text="Employment: ?"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:paddingHorizontal="16dp"
+                android:textSize="12sp"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
