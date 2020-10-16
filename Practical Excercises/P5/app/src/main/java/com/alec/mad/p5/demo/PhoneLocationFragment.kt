@@ -33,12 +33,12 @@ class PhoneLocationFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_phone_locaiton, container, false)
 
-        this.phoneTitle = view.findViewById(ID.PHONE_TITLE)
-        this.phoneEditText = view.findViewById(ID.PHONE_EDIT_TEXT)
-        this.phoneBtn = view.findViewById(ID.PHONE_BTN)
-        this.locationTitle = view.findViewById(ID.LOCATION_TITLE)
-        this.locationEditText = view.findViewById(ID.LOCATION_EDIT_TEXT)
-        this.locationBtn = view.findViewById(ID.LOCATION_BTN)
+        this.phoneTitle = view.findViewById(Id.PHONE_TITLE)
+        this.phoneEditText = view.findViewById(Id.PHONE_EDIT_TEXT)
+        this.phoneBtn = view.findViewById(Id.PHONE_BTN)
+        this.locationTitle = view.findViewById(Id.LOCATION_TITLE)
+        this.locationEditText = view.findViewById(Id.LOCATION_EDIT_TEXT)
+        this.locationBtn = view.findViewById(Id.LOCATION_BTN)
 
         this.phoneTitle.text = getString(R.string.phoneLocationPhoneTitle)
         this.locationTitle.text = getString(R.string.phoneLocationLocationTitle)
@@ -99,7 +99,7 @@ class PhoneLocationFragment : Fragment() {
         }
     }
 
-    object ID {
+    object Id {
         const val PHONE_TITLE = R.id.phoneLocationPhoneTitle
         const val PHONE_EDIT_TEXT = R.id.phoneLocationPhoneEditText
         const val PHONE_BTN = R.id.phoneLocationPhoneBtn

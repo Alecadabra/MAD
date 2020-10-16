@@ -30,8 +30,8 @@ class ThumbnailFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_thumbnail, container, false)
 
-        this.btn = view.findViewById(ID.BTN)
-        this.image = view.findViewById(ID.IMAGE)
+        this.btn = view.findViewById(Id.BTN)
+        this.image = view.findViewById(Id.IMAGE)
 
         this.btn.text = getString(R.string.thumbnailBtnText)
 
@@ -63,7 +63,7 @@ class ThumbnailFragment : Fragment() {
         }
     }
 
-    object ID {
+    object Id {
         const val BTN = R.id.thumbnailBtn
         const val IMAGE = R.id.thumbnailImage
     }

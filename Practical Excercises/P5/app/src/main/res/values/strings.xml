@@ -7,13 +7,13 @@
     <string name="phoneLocationLocationError">Please enter a valid lat and long</string>
     <string name="phoneLocationPhoneBtnText">Dial phone number</string>
     <string name="phoneLocationLocationBtnText">View location</string>
-
-    <string name="thumbnailBtnText">Take picture</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="phoneLocationPhoneEditTextHint">Enter a phone number</string>
     <string name="phoneLocationLocationEditTextHint">Enter as \'lat,long\'</string>
+
     <string name="contactTitleText">Select a contact to view it\'s details</string>
     <string name="contactBtnText">Select contact</string>
     <string name="contactReadoutTextDefault">No contact chosen</string>
+
+    <string name="thumbnailBtnText">Take picture</string>
+    <string name="bigPhotoBtnText">Take a picture</string>
 </resources>

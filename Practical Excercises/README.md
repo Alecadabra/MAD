@@ -15,3 +15,11 @@ A demonstration of RecyclerView. Never completed.
 ## P4 - Local Data
 
 A demonstration of SQLite databases.
+
+## P5 - App Interaction
+
+Several demonstrations off cross-app interactions.
+
+## P6 - Remote Data
+
+A demonstration of downloading and parsing JSON from a demo server.
