@@ -14,7 +14,7 @@ sealed class Structure(
 
 class ImageIDStructure(
     structureType: StructureType,
-    @DrawableRes private val imageId: Int
+    @DrawableRes val imageId: Int
 ) : Structure(structureType) {
 
     override fun drawImageTo(view: ImageView) {
