@@ -12,6 +12,7 @@ object Settings {
     val houseBuildCost = Default.HOUSE_BUILD_COST
     val commBuildCost = Default.COMM_BUILD_COST
     val roadBuildCost = Default.ROAD_BUILD_COST
+    var islandName = "My Island"
 
     private object Default {
         const val MAP_WIDTH = 50

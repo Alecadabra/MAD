@@ -8,17 +8,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.alec.mad.assignment2.R
 
-class SimpleToolFragment : Fragment() {
-
-    lateinit var text: String
+class SimpleToolFragment(private var text: String? = null) : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         savedInstanceState?.also { bundle ->
-            bundle.getString(BUNDLE_TEXT)?.also {
-                this.text = it
-            }
+            this.text ?: run { this.text = bundle.getString(BUNDLE_TEXT) }
         }
     }
 
@@ -38,9 +34,7 @@ class SimpleToolFragment : Fragment() {
         super.onSaveInstanceState(outState)
 
         outState.also { bundle ->
-            if (this::text.isInitialized) {
-                bundle.putString(BUNDLE_TEXT, this.text)
-            }
+            this.text?.also { bundle.putString(BUNDLE_TEXT, it) }
         }
     }
 

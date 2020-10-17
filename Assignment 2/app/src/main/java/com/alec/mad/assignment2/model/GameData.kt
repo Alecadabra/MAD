@@ -14,7 +14,9 @@ class GameData(
     val population
         get() = Settings.familySize * numResidential
     val employmentRate
-        get() = 1.coerceAtMost(numCommercial * Settings.shopSize / population)
+        get() = runCatching {
+            1.coerceAtMost(numCommercial * Settings.shopSize / population)
+        }.getOrNull() ?: 0
     var income = 0
         private set
 

@@ -15,27 +15,21 @@ import com.alec.mad.assignment2.model.StructureType
 import com.alec.mad.assignment2.singleton.Settings
 import com.alec.mad.assignment2.singleton.StructureData
 
-class BuildToolFragment : Fragment() {
+class BuildToolFragment(private var structureType: StructureType? = null) : Fragment() {
 
-    lateinit var structureType: StructureType
-
-    private lateinit var _structures: List<Structure>
-
-    val structures: List<Structure>
-        get() = if (this::_structures.isInitialized) {
-            _structures
-        } else {
-            this._structures = StructureData.filter { it.type == this.structureType }
-            _structures
-        }
+    val structures: List<Structure> by lazy {
+        StructureData.filter { it.type == this.structureType }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         savedInstanceState?.also { bundle ->
-            val ordinal = bundle.getInt(BUNDLE_STRUCTURE_TYPE_ORDINAL, -1)
-            if (ordinal != -1) {
-                this.structureType = StructureType.values()[ordinal]
+            this.structureType ?: run {
+                val ordinal = bundle.getInt(BUNDLE_STRUCTURE_TYPE_ORDINAL, -1)
+                if (ordinal != -1) {
+                    this.structureType = StructureType.values()[ordinal]
+                }
             }
         }
     }
@@ -63,6 +57,9 @@ class BuildToolFragment : Fragment() {
             StructureType.ROAD -> {
                 "Build a road. Cost: ${Settings.roadBuildCost}"
             }
+            else -> {
+                throw IllegalStateException("Structure type not set")
+            }
         }
         view.findViewById<TextView>(R.id.buildToolTitle).text = text
 
@@ -73,8 +70,8 @@ class BuildToolFragment : Fragment() {
         super.onSaveInstanceState(outState)
 
         outState.also { bundle ->
-            if (this::structureType.isInitialized) {
-                bundle.putInt(BUNDLE_STRUCTURE_TYPE_ORDINAL, this.structureType.ordinal)
+            this.structureType?.also {
+                bundle.putInt(BUNDLE_STRUCTURE_TYPE_ORDINAL, it.ordinal)
             }
         }
     }

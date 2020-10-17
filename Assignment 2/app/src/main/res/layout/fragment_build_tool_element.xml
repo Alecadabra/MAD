@@ -8,8 +8,8 @@
 
     <ImageButton
         android:id="@+id/buildToolElementStructureBtn"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
+        android:layout_width="@dimen/imageButtonSize"
+        android:layout_height="@dimen/imageButtonSize"
         android:layout_marginHorizontal="8dp"
         android:layout_marginVertical="8dp"
         app:layout_constraintTop_toTopOf="parent"
