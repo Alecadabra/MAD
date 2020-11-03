@@ -9,8 +9,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".view.activity.MapActivity"></activity>
-        <activity android:name=".view.activity.TitleActivity">
+        <activity android:name=".view.activity.DetailsActivity"></activity>
+        <activity
+            android:name=".view.activity.MapActivity"
+            android:screenOrientation="sensor" />
+        <activity
+            android:name=".view.activity.TitleActivity"
+            android:screenOrientation="sensor">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

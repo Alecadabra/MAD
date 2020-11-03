@@ -1,4 +1,4 @@
-package com.alec.mad.assignment2.view.fragment
+package com.alec.mad.assignment2.view.fragment.tool
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -33,13 +33,11 @@ class SimpleToolFragment(private var text: String? = null) : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        outState.also { bundle ->
-            this.text?.also { bundle.putString(BUNDLE_TEXT, it) }
-        }
+        this.text?.also { outState.putString(BUNDLE_TEXT, it) }
     }
 
     companion object {
-        private const val PACKAGE = "com.alec.mad.assignment2.view.fragment"
+        private const val PACKAGE = "com.alec.mad.assignment2.view.fragment.SimpleToolFragment"
         const val BUNDLE_TEXT = "$PACKAGE.text"
     }
 }

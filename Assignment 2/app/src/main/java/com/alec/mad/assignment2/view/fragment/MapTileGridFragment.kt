@@ -9,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import com.alec.mad.assignment2.R
+import com.alec.mad.assignment2.model.GameData
+import com.alec.mad.assignment2.model.GameData.Tool
 import com.alec.mad.assignment2.model.MapElement
 import com.alec.mad.assignment2.singleton.Settings
 import com.alec.mad.assignment2.singleton.State
@@ -49,13 +51,13 @@ class MapTileGridFragment : Fragment() {
         override fun onBindViewHolder(holder: MapTileViewHolder, position: Int) {
             val i = position % Settings.mapHeight
             val j = position / Settings.mapHeight
-            holder.bindViewHolder(State.gameData.map[i][j])
+            holder.bindViewHolder(State.gameData.map[i][j], i, j)
         }
 
         override fun getItemCount(): Int = Settings.mapHeight * Settings.mapWidth
 
         inner class MapTileViewHolder(
-            view: View,
+            val view: View,
             parent: ViewGroup
         ) : RecyclerView.ViewHolder(view) {
 
@@ -74,10 +76,28 @@ class MapTileGridFragment : Fragment() {
                 this.bgImageView.rotation = rightAngles.random()
             }
 
-            fun bindViewHolder(mapElement: MapElement) {
+            fun bindViewHolder(mapElement: MapElement, i: Int, j: Int) {
                 this.bgImageView.setImageResource(mapElement.bgImage)
                 mapElement.structure?.drawImageTo(this.structureImageView) ?: run {
                     this.structureImageView.setImageResource(android.R.color.transparent)
+                }
+                view.setOnClickListener {
+                    when (State.gameData.currentTool) {
+                        Tool.BUILD_RESIDENTIAL, Tool.BUILD_COMMERCIAL, Tool.BUILD_ROAD -> {
+                            val built = State.gameData.buildIntent?.buildAt(i, j) ?: false
+                            if (built) {
+                                this@MapTileGridAdapter.notifyItemChanged(this.adapterPosition)
+                            }
+                        }
+                        Tool.DEMOLISH -> {
+                            if (mapElement.structure != null) {
+                                mapElement.structure = null
+                                this@MapTileGridAdapter.notifyItemChanged(this.adapterPosition)
+                            }
+                        }
+                        Tool.INFO -> TODO()
+                    }
+
                 }
             }
         }

@@ -3,9 +3,6 @@ package com.alec.mad.assignment2.view.activity
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.graphics.ColorFilter
-import android.graphics.ColorMatrix
-import android.graphics.ColorMatrixColorFilter
 import android.graphics.LightingColorFilter
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -13,14 +10,12 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import com.alec.mad.assignment2.R
-import com.alec.mad.assignment2.model.StructureType
+import com.alec.mad.assignment2.model.GameData
 import com.alec.mad.assignment2.singleton.Settings
 import com.alec.mad.assignment2.singleton.State
 import com.alec.mad.assignment2.view.fragment.MapTileGridFragment
-import com.alec.mad.assignment2.view.fragment.BuildToolFragment
-import com.alec.mad.assignment2.view.fragment.SimpleToolFragment
+import kotlin.math.absoluteValue
 
 @SuppressLint("SetTextI18n")
 class MapActivity : AppCompatActivity() {
@@ -56,32 +51,32 @@ class MapActivity : AppCompatActivity() {
                 transaction.commit()
         }
 
-        changeTool(BuildToolFragment(StructureType.RESIDENTIAL), "Build - Residential")
+        changeTool(State.gameData.currentTool)
         enableAllToolsExcept(this.views.toolResidential)
 
         this.title = Settings.islandName
         updateStats()
 
         this.views.toolResidential.setOnClickListener { view ->
-            changeTool(BuildToolFragment(StructureType.RESIDENTIAL), "Build - Residential")
+            changeTool(GameData.Tool.BUILD_RESIDENTIAL)
             enableAllToolsExcept(view)
         }
         this.views.toolCommercial.setOnClickListener { view ->
-            changeTool(BuildToolFragment(StructureType.COMMERCIAL), "Build - Commercial")
+            changeTool(GameData.Tool.BUILD_COMMERCIAL)
             enableAllToolsExcept(view)
         }
         this.views.toolRoad.setOnClickListener { view ->
-            changeTool(BuildToolFragment(StructureType.ROAD), "Build - Road")
+            changeTool(GameData.Tool.BUILD_ROAD)
             enableAllToolsExcept(view)
         }
 
         this.views.toolDemolish.setOnClickListener { view ->
-            changeTool(SimpleToolFragment("Tap a structure to demolish"), "Demolish")
+            changeTool(GameData.Tool.DEMOLISH)
             enableAllToolsExcept(view)
         }
 
         this.views.toolInfo.setOnClickListener { view ->
-            changeTool(SimpleToolFragment("Tap a structure to view info"), "Info")
+            changeTool(GameData.Tool.INFO)
             enableAllToolsExcept(view)
         }
 
@@ -116,19 +111,20 @@ class MapActivity : AppCompatActivity() {
             gameData.income > 0 -> "+"
             else -> ""
         }
-        this.views.statsIncome.text = "Income: ${incomeSign}$${gameData.income}"
+        this.views.statsIncome.text = "Income: ${incomeSign}$${gameData.income.absoluteValue}"
         this.views.statsEmployment.text = "${gameData.employmentRate}% Employment"
     }
 
-    private fun changeTool(toolFragment: Fragment, name: String) {
+    private fun changeTool(tool: GameData.Tool) {
         supportFragmentManager.beginTransaction().also { transaction ->
             transaction.replace(
                 R.id.mapActivityToolFrame,
-                toolFragment
+                tool.fragment
             )
             transaction.commit()
         }
-        this.views.toolText.text = "Selected Tool\n$name"
+        this.views.toolText.text = "Selected Tool\n${tool.displayName}"
+        State.gameData.currentTool = tool
     }
 
     private fun enableAllToolsExcept(view: View) {

@@ -1,14 +1,16 @@
 package com.alec.mad.assignment2.model
 
 import android.graphics.Bitmap
+import android.os.Parcelable
 import android.widget.ImageView
 import androidx.annotation.DrawableRes
+import kotlinx.android.parcel.Parcelize
 import java.util.Locale
 
 sealed class Structure(
     val type: StructureType,
     var name: String = type.toString()
-) {
+)  {
     abstract fun drawImageTo(view: ImageView)
 }
 

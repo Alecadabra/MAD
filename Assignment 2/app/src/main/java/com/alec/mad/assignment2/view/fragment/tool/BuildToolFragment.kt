@@ -1,5 +1,6 @@
-package com.alec.mad.assignment2.view.fragment
+package com.alec.mad.assignment2.view.fragment.tool
 
+import android.graphics.LightingColorFilter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,15 +11,21 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.alec.mad.assignment2.R
+import com.alec.mad.assignment2.controller.BuildIntent
 import com.alec.mad.assignment2.model.Structure
 import com.alec.mad.assignment2.model.StructureType
 import com.alec.mad.assignment2.singleton.Settings
+import com.alec.mad.assignment2.singleton.State
 import com.alec.mad.assignment2.singleton.StructureData
+import kotlin.properties.Delegates
 
 class BuildToolFragment(private var structureType: StructureType? = null) : Fragment() {
 
     val structures: List<Structure> by lazy {
-        StructureData.filter { it.type == this.structureType }
+        // Resolve the structure list if the type has been set
+        this.structureType?.let { nullSafeType ->
+            StructureData.filter { it.type == nullSafeType }
+        } ?: throw IllegalStateException("Structure type null")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,15 +76,15 @@ class BuildToolFragment(private var structureType: StructureType? = null) : Frag
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        outState.also { bundle ->
-            this.structureType?.also {
-                bundle.putInt(BUNDLE_STRUCTURE_TYPE_ORDINAL, it.ordinal)
-            }
+        this.structureType?.also {
+            outState.putInt(BUNDLE_STRUCTURE_TYPE_ORDINAL, it.ordinal)
         }
     }
 
     inner class StructureSelectorAdapter
         : RecyclerView.Adapter<StructureSelectorAdapter.StructureSelectorViewHolder>() {
+
+        private var selectedItemPosition: Int? = null
 
         override fun onCreateViewHolder(
             parent: ViewGroup, viewType: Int
@@ -98,7 +105,7 @@ class BuildToolFragment(private var structureType: StructureType? = null) : Frag
         override fun getItemCount(): Int = this@BuildToolFragment.structures.size
 
         inner class StructureSelectorViewHolder(
-            view: View
+            val view: View
         ) : RecyclerView.ViewHolder(view) {
 
             private val structureImageButton: ImageButton = view.findViewById(
@@ -107,12 +114,36 @@ class BuildToolFragment(private var structureType: StructureType? = null) : Frag
 
             fun bindViewHolder(structure: Structure) {
                 structure.drawImageTo(this.structureImageButton)
+
+                this.structureImageButton.background.clearColorFilter()
+
+                this@StructureSelectorAdapter.selectedItemPosition?.also { selectedPos ->
+                    if (this.adapterPosition == selectedPos) {
+                        this.structureImageButton.background.colorFilter = LightingColorFilter(
+                            0x000000, 0xAAFFAA
+                        )
+                    }
+                }
+
+                this.structureImageButton.setOnClickListener {
+
+                    State.gameData.buildIntent = BuildIntent(
+                        this@BuildToolFragment.context, structure
+                    )
+
+                    this@StructureSelectorAdapter.selectedItemPosition?.also { selectedPos ->
+                        this@StructureSelectorAdapter.notifyItemChanged(selectedPos)
+                    }
+
+                    this@StructureSelectorAdapter.selectedItemPosition = this.adapterPosition
+                    this@StructureSelectorAdapter.notifyItemChanged(this.adapterPosition)
+                }
             }
         }
     }
 
     companion object {
-        private const val PACKAGE = "com.alec.mad.assignment2.view.fragment"
+        private const val PACKAGE = "com.alec.mad.assignment2.view.fragment.BuildToolFragment"
         const val BUNDLE_STRUCTURE_TYPE_ORDINAL = "$PACKAGE.structureTypeOrdinal"
     }
 }
