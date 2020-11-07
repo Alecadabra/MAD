@@ -8,14 +8,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
 import com.alec.mad.assignment2.R
-import com.alec.mad.assignment2.model.GameData
 import com.alec.mad.assignment2.model.GameData.Tool
-import com.alec.mad.assignment2.model.MapElement
-import com.alec.mad.assignment2.singleton.Settings
+import com.alec.mad.assignment2.model.GameMap
+import com.alec.mad.assignment2.model.observer.GameMapObserver
+import com.alec.mad.assignment2.model.Settings
 import com.alec.mad.assignment2.singleton.State
+import com.alec.mad.assignment2.view.activity.DetailsActivity
 
-class MapTileGridFragment : Fragment() {
+class MapTileGridFragment : Fragment(), GameMapObserver {
+
+    private var rv: RecyclerView? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -25,19 +29,33 @@ class MapTileGridFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_map_tile_grid, container, false)
 
         // Set up recyclerview
-        val rv = view as RecyclerView
-        rv.layoutManager = GridLayoutManager(
+        this.rv = view as? RecyclerView
+        this.rv?.layoutManager = GridLayoutManager(
             context,
-            Settings.mapHeight,
+            State.gameData.settings.mapHeight,
             GridLayoutManager.HORIZONTAL,
             false
         )
-        rv.adapter = MapTileGridAdapter()
+        this.rv?.adapter = MapTileGridAdapter()
+
+        State.gameData.map.observers.add(this)
 
         return view
     }
 
-    class MapTileGridAdapter : RecyclerView.Adapter<MapTileGridAdapter.MapTileViewHolder>() {
+    override fun onDestroy() {
+        super.onDestroy()
+
+        State.gameData.map.observers.remove(this)
+    }
+
+    override fun onUpdateMapElement(i: Int, j: Int, mapElement: GameMap.MapElement) {
+        this.rv?.adapter?.also { adapter ->
+            adapter.notifyItemChanged(GameMap.getAdapterPosition(i, j))
+        }
+    }
+
+    inner class MapTileGridAdapter : RecyclerView.Adapter<MapTileGridAdapter.MapTileViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MapTileViewHolder {
             val view = LayoutInflater.from(parent.context).inflate(
@@ -49,12 +67,12 @@ class MapTileGridFragment : Fragment() {
         }
 
         override fun onBindViewHolder(holder: MapTileViewHolder, position: Int) {
-            val i = position % Settings.mapHeight
-            val j = position / Settings.mapHeight
-            holder.bindViewHolder(State.gameData.map[i][j], i, j)
+            val i = GameMap.getI(position)
+            val j = GameMap.getJ(position)
+            holder.bindViewHolder(State.gameData.map[i, j], i, j)
         }
 
-        override fun getItemCount(): Int = Settings.mapHeight * Settings.mapWidth
+        override fun getItemCount(): Int = State.gameData.settings.mapHeight * State.gameData.settings.mapWidth
 
         inner class MapTileViewHolder(
             val view: View,
@@ -66,17 +84,19 @@ class MapTileGridFragment : Fragment() {
 
             init {
                 // Make square
-                val size = parent.measuredHeight / Settings.mapHeight + 1
+                val size = parent.measuredHeight / State.gameData.settings.mapHeight + 1
                 this.itemView.layoutParams.also { lp ->
                     lp.width = size
                     lp.height = size
                 }
 
                 // Rotate bgImage randomly, just per recycler view tile not per bind
-                this.bgImageView.rotation = rightAngles.random()
+                // It is intentional that this changes per view holder rather than tile, this is
+                // a performance optimisation
+                this.bgImageView.rotation = RIGHT_ANGLES.random()
             }
 
-            fun bindViewHolder(mapElement: MapElement, i: Int, j: Int) {
+            fun bindViewHolder(mapElement: GameMap.MapElement, i: Int, j: Int) {
                 this.bgImageView.setImageResource(mapElement.bgImage)
                 mapElement.structure?.drawImageTo(this.structureImageView) ?: run {
                     this.structureImageView.setImageResource(android.R.color.transparent)
@@ -84,26 +104,32 @@ class MapTileGridFragment : Fragment() {
                 view.setOnClickListener {
                     when (State.gameData.currentTool) {
                         Tool.BUILD_RESIDENTIAL, Tool.BUILD_COMMERCIAL, Tool.BUILD_ROAD -> {
-                            val built = State.gameData.buildIntent?.buildAt(i, j) ?: false
-                            if (built) {
-                                this@MapTileGridAdapter.notifyItemChanged(this.adapterPosition)
-                            }
+                            State.gameData.buildIntent?.buildAt(i, j) ?: Toast.makeText(
+                                this@MapTileGridFragment.context,
+                                "You don't have a structure selected",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                         Tool.DEMOLISH -> {
                             if (mapElement.structure != null) {
                                 mapElement.structure = null
-                                this@MapTileGridAdapter.notifyItemChanged(this.adapterPosition)
                             }
                         }
-                        Tool.INFO -> TODO()
+                        Tool.INFO -> {
+                            this@MapTileGridFragment.activity?.also { nullSafeActivity ->
+                                val intent = DetailsActivity.getIntent(
+                                    nullSafeActivity, i, j
+                                )
+                                nullSafeActivity.startActivity(intent)
+                            }
+                        }
                     }
-
                 }
             }
         }
     }
 
     companion object {
-        val rightAngles = setOf(0f, 90f, 180f, 270f)
+        private val RIGHT_ANGLES = setOf(0f, 90f, 180f, 270f)
     }
 }

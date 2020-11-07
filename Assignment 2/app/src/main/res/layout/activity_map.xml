@@ -21,10 +21,9 @@
         android:layout_width="0dp"
         android:layout_height="95dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:backgroundTint="#ffffff"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mapActivityMapTileGridFrame" />
+        app:layout_constraintTop_toBottomOf="@+id/mapActivityMapTileGridFrame"/>
 
     <TextView
         android:id="@+id/mapActivityToolText"

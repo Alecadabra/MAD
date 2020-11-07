@@ -14,18 +14,17 @@ import com.alec.mad.assignment2.R
 import com.alec.mad.assignment2.controller.BuildIntent
 import com.alec.mad.assignment2.model.Structure
 import com.alec.mad.assignment2.model.StructureType
-import com.alec.mad.assignment2.singleton.Settings
+import com.alec.mad.assignment2.model.Settings
 import com.alec.mad.assignment2.singleton.State
 import com.alec.mad.assignment2.singleton.StructureData
-import kotlin.properties.Delegates
 
 class BuildToolFragment(private var structureType: StructureType? = null) : Fragment() {
 
     val structures: List<Structure> by lazy {
         // Resolve the structure list if the type has been set
         this.structureType?.let { nullSafeType ->
-            StructureData.filter { it.type == nullSafeType }
-        } ?: throw IllegalStateException("Structure type null")
+            StructureData.filter { it.structureType == nullSafeType }
+        } ?: error("Structure type null")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,16 +55,16 @@ class BuildToolFragment(private var structureType: StructureType? = null) : Frag
         // Display title
         val text = when (this.structureType) {
             StructureType.RESIDENTIAL -> {
-                "Build a residential building. Cost: ${Settings.houseBuildCost}"
+                "Build a residential building. Cost: ${State.gameData.settings.houseBuildCost}"
             }
             StructureType.COMMERCIAL -> {
-                "Build a commercial building. Cost: ${Settings.commBuildCost}"
+                "Build a commercial building. Cost: ${State.gameData.settings.commBuildCost}"
             }
             StructureType.ROAD -> {
-                "Build a road. Cost: ${Settings.roadBuildCost}"
+                "Build a road. Cost: ${State.gameData.settings.roadBuildCost}"
             }
             else -> {
-                throw IllegalStateException("Structure type not set")
+                error("Structure type not set")
             }
         }
         view.findViewById<TextView>(R.id.buildToolTitle).text = text

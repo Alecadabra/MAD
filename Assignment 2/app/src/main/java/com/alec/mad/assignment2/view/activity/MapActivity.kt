@@ -6,19 +6,20 @@ import android.content.Intent
 import android.graphics.LightingColorFilter
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import com.alec.mad.assignment2.R
-import com.alec.mad.assignment2.model.GameData
-import com.alec.mad.assignment2.singleton.Settings
+import com.alec.mad.assignment2.model.GameData.Tool
+import com.alec.mad.assignment2.model.observer.GameDataObserver
+import com.alec.mad.assignment2.model.Settings
 import com.alec.mad.assignment2.singleton.State
 import com.alec.mad.assignment2.view.fragment.MapTileGridFragment
 import kotlin.math.absoluteValue
+import kotlin.math.roundToInt
 
 @SuppressLint("SetTextI18n")
-class MapActivity : AppCompatActivity() {
+class MapActivity : AppCompatActivity(), GameDataObserver {
 
     private lateinit var views: Views
 
@@ -42,6 +43,7 @@ class MapActivity : AppCompatActivity() {
             toolText = findViewById(R.id.mapActivityToolText)
         )
 
+        // Bring in map tile grid fragment
         supportFragmentManager.findFragmentById(R.id.mapActivityMapTileGridFrame)
             ?: supportFragmentManager.beginTransaction().also { transaction ->
                 transaction.add(
@@ -51,91 +53,111 @@ class MapActivity : AppCompatActivity() {
                 transaction.commit()
         }
 
-        changeTool(State.gameData.currentTool)
-        enableAllToolsExcept(this.views.toolResidential)
+        State.gameData.observers.add(this)
+        State.gameData.notifyMe(this)
 
-        this.title = Settings.islandName
-        updateStats()
+        // Set top bar text
+        this.title = State.gameData.settings.islandName
 
-        this.views.toolResidential.setOnClickListener { view ->
-            changeTool(GameData.Tool.BUILD_RESIDENTIAL)
-            enableAllToolsExcept(view)
-        }
-        this.views.toolCommercial.setOnClickListener { view ->
-            changeTool(GameData.Tool.BUILD_COMMERCIAL)
-            enableAllToolsExcept(view)
-        }
-        this.views.toolRoad.setOnClickListener { view ->
-            changeTool(GameData.Tool.BUILD_ROAD)
-            enableAllToolsExcept(view)
-        }
-
-        this.views.toolDemolish.setOnClickListener { view ->
-            changeTool(GameData.Tool.DEMOLISH)
-            enableAllToolsExcept(view)
-        }
-
-        this.views.toolInfo.setOnClickListener { view ->
-            changeTool(GameData.Tool.INFO)
-            enableAllToolsExcept(view)
+        // Set on click listeners for tools
+        this.views.tools.forEach { toolBtn ->
+            toolBtn.setOnClickListener {
+                State.gameData.currentTool = this.views.buttonsToTools[toolBtn]
+                    ?: error("Buttons to tools maps incorrect")
+            }
         }
 
         this.views.timeStep.setOnClickListener {
-            State.gameData.timeStep()
-            updateStats()
-            if (State.gameData.money < 0) {
-                // Lose condition
-                Toast.makeText(this, "Game Over!", Toast.LENGTH_LONG).show()
-                this.views.tools.forEach {
-                    it.isClickable = true
-                    it.isEnabled = true
-                }
-                supportFragmentManager.findFragmentById(R.id.mapActivityToolFrame)?.also { frag ->
-                    supportFragmentManager.beginTransaction().also { transaction ->
-                        transaction.remove(frag)
-                        transaction.commit()
-                    }
-                }
-            }
+            State.gameData.gameTime++
         }
     }
 
-    private fun updateStats() {
-        val gameData = State.gameData
-        this.views.statsTime.text = "Day ${gameData.gameTime}"
-        this.views.statsPopulation.text = "${gameData.population} Residents"
-        this.views.statsTemperature.text = "TODO Degrees"
-        this.views.statsMoney.text = "Money: $${gameData.money}"
-        val incomeSign = when {
-            gameData.income < 0 -> "-"
-            gameData.income > 0 -> "+"
-            else -> ""
-        }
-        this.views.statsIncome.text = "Income: ${incomeSign}$${gameData.income.absoluteValue}"
-        this.views.statsEmployment.text = "${gameData.employmentRate}% Employment"
+    override fun onDestroy() {
+        super.onDestroy()
+
+        // Deregister observers
+        State.gameData.observers.remove(this)
     }
 
-    private fun changeTool(tool: GameData.Tool) {
+    override fun onUpdateCurrentTool(currentTool: Tool) {
+        // Move fragment in
         supportFragmentManager.beginTransaction().also { transaction ->
             transaction.replace(
                 R.id.mapActivityToolFrame,
-                tool.fragment
+                currentTool.fragment
             )
             transaction.commit()
         }
-        this.views.toolText.text = "Selected Tool\n${tool.displayName}"
-        State.gameData.currentTool = tool
+
+        // Update text
+        this.views.toolText.text = "Selected Tool\n${currentTool.displayName}"
+
+        // Enable only this tool
+        this.views.toolsToButtons[currentTool]?.also { view ->
+            this.views.tools.forEach {
+                it.isClickable = true
+                it.isEnabled = true
+                it.background.clearColorFilter()
+            }
+            view.isClickable = false
+            view.isEnabled = false
+            view.background.colorFilter = LightingColorFilter(0x000000, 0xAAFFAA)
+        }
     }
 
-    private fun enableAllToolsExcept(view: View) {
-        this.views.tools.forEach {
-            it.isClickable = true
-            it.isEnabled = true
-            it.background.clearColorFilter()
+    override fun onUpdateGameTime(gameTime: Int) {
+        this.views.statsTime.text = "Day $gameTime"
+    }
+
+    override fun onUpdatePopulation(population: Int) {
+        this.views.statsPopulation.text = "$population Residents"
+    }
+
+    override fun onUpdateTemperature(temperature: Int?) {
+        val nullSafeTemperature = "Temperature: ${temperature ?: "..."}"
+        this.views.statsTemperature.text = nullSafeTemperature
+    }
+
+    override fun onUpdateMoney(money: Int) {
+        this.views.statsMoney.text = "Money: $$money"
+
+        if (State.gameData.money < 0) {
+            // Lose condition
+            Toast.makeText(this, "Game Over!", Toast.LENGTH_LONG).show()
+
+            // Buttons that can't be pressed anymore
+            val buttonsToDisable = this.views.tools.toMutableList().also {
+                it.add(this.views.timeStep)
+            }
+            buttonsToDisable.forEach {
+                it.isClickable = false
+                it.isEnabled = false
+            }
+
+            // Remove tool fragment
+            supportFragmentManager.findFragmentById(R.id.mapActivityToolFrame)?.also { frag ->
+                supportFragmentManager.beginTransaction().also { transaction ->
+                    transaction.remove(frag)
+                    transaction.commit()
+                }
+            }
+
+            // Remove build intent if present
+            State.gameData.buildIntent = null
         }
-        view.isClickable = false
-        view.isEnabled = false
-        view.background.colorFilter = LightingColorFilter(0x000000, 0xAAFFAA)
+    }
+
+    override fun onUpdateIncome(income: Int) {
+        val incomeSign = when {
+            income < 0 -> "-"
+            income > 0 -> "+"
+            else -> ""
+        }
+        this.views.statsIncome.text = "Income: ${incomeSign}$${income.absoluteValue}"
+    }
+
+    override fun onUpdateEmploymentRate(employmentRate: Float) {
+        this.views.statsEmployment.text = "${(employmentRate * 100).roundToInt()}% Employment"
     }
 
     class Views(
@@ -154,6 +176,21 @@ class MapActivity : AppCompatActivity() {
         val toolText: TextView
     ) {
         val tools = setOf(toolResidential, toolCommercial, toolRoad, toolDemolish, toolInfo)
+
+        private val toolButtonPairs = setOf(
+            Tool.BUILD_RESIDENTIAL to this.toolResidential,
+            Tool.BUILD_COMMERCIAL to this.toolCommercial,
+            Tool.BUILD_ROAD to this.toolRoad,
+            Tool.DEMOLISH to this.toolDemolish,
+            Tool.INFO to this.toolInfo
+        )
+
+        val toolsToButtons: Map<Tool, ImageButton> = toolButtonPairs.toMap()
+
+        val buttonsToTools: Map<ImageButton, Tool> = this.toolButtonPairs.map {
+            // Flip pairs
+            it.second to it.first
+        }.toMap()
     }
 
     companion object {

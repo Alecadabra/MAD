@@ -5,11 +5,14 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import com.alec.mad.assignment2.R
+import com.alec.mad.assignment2.controller.ThumbnailHandler
+import com.alec.mad.assignment2.model.ImageBitmapStructure
 import com.alec.mad.assignment2.singleton.State
-import java.lang.IllegalStateException
 
 class DetailsActivity(
     private var row: Int? = null,
@@ -18,10 +21,16 @@ class DetailsActivity(
 
     private lateinit var views: Views
 
+    private var thumbnailHandler: ThumbnailHandler? = null
+
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_details)
+
+        this.title = "Structure Details"
+
+        this.thumbnailHandler = ThumbnailHandler(this, THUMBNAIL_REQUEST_CODE)
 
         savedInstanceState?.also { bundle ->
             this.row ?: run { this.row = bundle.getInt(BUNDLE_ROW) }
@@ -41,11 +50,10 @@ class DetailsActivity(
             }
         }
 
-        val i = this.row ?: throw IllegalStateException("Row not set")
-        val j = this.col ?: throw IllegalStateException("Col not set")
-        val mapElement = State.gameData.map[i][j]
-        val structure = mapElement.structure
-            ?: throw IllegalStateException("Row/Col do not contain a structure")
+        val i = this.row ?: error("Row not set")
+        val j = this.col ?: error("Col not set")
+        val mapElement = State.gameData.map[i, j]
+        val structure = mapElement.structure ?: error("Row/Col do not contain a structure")
 
         this.views = Views(
             gridCoordsTextView = findViewById(R.id.detailsActivityGridCoordsValue),
@@ -56,11 +64,38 @@ class DetailsActivity(
 
         this.views.gridCoordsTextView.text = "Row: ${i + 1}, Col: ${j + 1}"
 
-        this.views.structureTypeTextView.text = structure.type.toString()
+        this.views.structureTypeTextView.text = structure.structureType.toString()
 
-        this.views.nameTextView.text = structure.name
+        this.views.nameTextView.setText(structure.name)
 
-        this.views.photoButton.setOnClickListener { photoButtonHandler() }
+        this.views.photoButton.setOnClickListener {
+            this.thumbnailHandler?.takeThumbnail()
+                ?: error("Thumbnail handler not set")
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == THUMBNAIL_REQUEST_CODE) {
+            val i = this.row
+            val j = this.col
+            val bmp = this.thumbnailHandler?.getResult(resultCode, data)
+            if (i != null && j != null && bmp != null) {
+                State.gameData.map[i, j].structure = ImageBitmapStructure(
+                    structure = State.gameData.map[i, j].structure
+                        ?: error("No structure at map element"),
+                    imageBitmap = bmp
+                )
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        this.row?.also { outState.putInt(BUNDLE_ROW, it) }
+        this.col?.also { outState.putInt(BUNDLE_COL, it) }
     }
 
     override fun onDestroy() {
@@ -69,22 +104,18 @@ class DetailsActivity(
         // Set structure name from EditText
         val i = this.row
         val j = this.col
-        
         if (i != null && j != null && this::views.isInitialized) {
-            State.gameData.map[i][j].structure?.also { structure ->
+            State.gameData.map[i, j].structure?.also { structure ->
                 structure.name = this.views.nameTextView.text.toString()
+                State.gameData.map[i, j].structure = structure
             }
         }
-    }
-
-    private fun photoButtonHandler() {
-        // TODO Take picture etc
     }
 
     private class Views(
         val gridCoordsTextView: TextView,
         val structureTypeTextView: TextView,
-        val nameTextView: TextView,
+        val nameTextView: EditText,
         val photoButton: Button
     )
 
@@ -92,6 +123,8 @@ class DetailsActivity(
         private const val PACKAGE = "com.alec.mad.assignment2.view.activity.DetailsActivity"
         const val BUNDLE_ROW = "$PACKAGE.row"
         const val BUNDLE_COL = "$PACKAGE.col"
+
+        const val THUMBNAIL_REQUEST_CODE = 1
 
         fun getIntent(c: Context, row: Int, col: Int): Intent = Intent(
             c, DetailsActivity::class.java

@@ -32,3 +32,5 @@ private val structures = listOf(
     ROAD to drawable.ic_road_sw,
     ROAD to drawable.ic_road_w
 ).map { ImageIDStructure(it.first, it.second) }
+
+

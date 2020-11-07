@@ -15,7 +15,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         tools:ignore="HardcodedText"
-        android:padding="16dp">
+        style="@style/Widget.AppCompat.Button.Small"
+        android:backgroundTint="#ffffff"
+        android:clickable="false"
+        android:padding="32dp"
+        tools:targetApi="lollipop">
 
         <TextView
             android:id="@+id/detailsActivityGridCoordsTitle"
@@ -92,5 +96,14 @@
             android:text="Take a photo" />
 
     </LinearLayout>
+
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_grass4"
+        android:contentDescription="Background"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
