@@ -6,7 +6,7 @@ import android.graphics.Bitmap
 import android.provider.MediaStore
 import androidx.fragment.app.FragmentActivity
 
-class ThumbnailHandler(private val activity: FragmentActivity, val requestCode: Int) {
+class ThumbnailHandler(private val activity: FragmentActivity, private val requestCode: Int) {
     private val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 
     fun takeThumbnail() {

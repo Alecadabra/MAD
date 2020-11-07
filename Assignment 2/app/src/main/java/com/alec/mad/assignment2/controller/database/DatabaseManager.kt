@@ -16,6 +16,9 @@ import com.alec.mad.assignment2.model.observer.GameMapObserver
 import com.alec.mad.assignment2.model.observer.ObservableState
 import com.alec.mad.assignment2.model.observer.SettingsObserver
 import com.alec.mad.assignment2.singleton.State
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class DatabaseManager(context: Context?) : GameDataObserver, GameMapObserver, SettingsObserver {
 
@@ -43,9 +46,6 @@ class DatabaseManager(context: Context?) : GameDataObserver, GameMapObserver, Se
             )
         )
 
-    val hasStoredGameState: Boolean
-        get() = gameDataCursor.count != 0
-
     fun startListening() {
         // Register to observers, and look cool doing it
         setOf<ObservableState<in DatabaseManager>>(
@@ -72,7 +72,7 @@ class DatabaseManager(context: Context?) : GameDataObserver, GameMapObserver, Se
         val structure = mapElement.structure
         if (structure != null) {
             // Add structure to database at this adapter position
-            this.db.replace(
+            this@DatabaseManager.db.replace(
                 StructuresTable.NAME,
                 null,
                 ContentValues().also { cv ->
@@ -90,12 +90,11 @@ class DatabaseManager(context: Context?) : GameDataObserver, GameMapObserver, Se
             )
         } else {
             // Delete this structure
-            this.db.delete(
+            this@DatabaseManager.db.delete(
                 StructuresTable.NAME,
                 "${StructuresTable.Cols.ADAPTER_POSITION} = ?",
                 arrayOf(GameMap.getAdapterPosition(i, j).toString())
             )
-
         }
     }
 

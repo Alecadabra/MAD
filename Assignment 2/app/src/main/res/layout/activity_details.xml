@@ -35,6 +35,10 @@
             android:id="@+id/detailsActivityGridCoordsValue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="18sp"
+            android:layout_marginHorizontal="16dp"
+            android:gravity="center"
             android:layout_marginBottom="32dp"/>
 
         <!-- ======================================================================== -->
@@ -53,6 +57,10 @@
             android:id="@+id/detailsActivityStructureTypeValue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="18sp"
+            android:layout_marginHorizontal="16dp"
+            android:gravity="center"
             android:layout_marginBottom="32dp"/>
 
         <!-- ======================================================================== -->
@@ -73,6 +81,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autofillHints="Set name"
+            android:layout_gravity="center"
+            android:textSize="18sp"
+            android:layout_marginHorizontal="16dp"
+            android:gravity="center"
             android:hint="Enter Name"
             android:inputType="text"
             android:layout_marginBottom="32dp" />
@@ -93,7 +105,15 @@
             android:id="@+id/detailsActivityPhotoButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
             android:text="Take a photo" />
+
+        <Button
+            android:id="@+id/detailsActivityBackButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Back" />
 
     </LinearLayout>
 
@@ -104,6 +124,7 @@
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_grass4"
-        android:contentDescription="Background"/>
+        android:contentDescription="Background"
+        tools:ignore="HardcodedText" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

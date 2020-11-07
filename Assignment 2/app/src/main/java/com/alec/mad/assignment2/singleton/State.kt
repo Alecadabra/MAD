@@ -107,7 +107,11 @@ object State {
             List(settings.mapHeight) { i ->
                 List(settings.mapWidth) { j ->
                     GameMap.MapElement(
-                        structure = structures[GameMap.getAdapterPosition(i, j)],
+                        structure = structures[GameMap.getAdapterPosition(
+                            i,
+                            j,
+                            settings.mapHeight
+                        )],
                         bgImage = bgDrawables.random()
                     )
                 }

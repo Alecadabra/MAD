@@ -59,7 +59,8 @@ class DetailsActivity(
             gridCoordsTextView = findViewById(R.id.detailsActivityGridCoordsValue),
             structureTypeTextView = findViewById(R.id.detailsActivityStructureTypeValue),
             nameTextView = findViewById(R.id.detailsActivityNameValue),
-            photoButton = findViewById(R.id.detailsActivityPhotoButton)
+            photoButton = findViewById(R.id.detailsActivityPhotoButton),
+            backButton = findViewById(R.id.detailsActivityBackButton)
         )
 
         this.views.gridCoordsTextView.text = "Row: ${i + 1}, Col: ${j + 1}"
@@ -72,6 +73,8 @@ class DetailsActivity(
             this.thumbnailHandler?.takeThumbnail()
                 ?: error("Thumbnail handler not set")
         }
+
+        this.views.backButton.setOnClickListener { onBackPressed() }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -116,7 +119,8 @@ class DetailsActivity(
         val gridCoordsTextView: TextView,
         val structureTypeTextView: TextView,
         val nameTextView: EditText,
-        val photoButton: Button
+        val photoButton: Button,
+        val backButton: Button
     )
 
     companion object {

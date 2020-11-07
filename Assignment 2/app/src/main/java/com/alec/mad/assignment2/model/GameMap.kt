@@ -4,10 +4,11 @@ import androidx.annotation.DrawableRes
 import com.alec.mad.assignment2.model.observer.GameMapObserver
 import com.alec.mad.assignment2.model.observer.ObservableState
 import com.alec.mad.assignment2.singleton.State
-import kotlin.properties.Delegates
 import kotlin.properties.Delegates.observable
 
-class GameMap(private val map: List<List<MapElement>>) : ObservableState<GameMapObserver>(), List<List<GameMap.MapElement>> by map {
+class GameMap(
+    private val map: List<List<MapElement>>
+) : ObservableState<GameMapObserver>(), List<List<GameMap.MapElement>> by map {
 
     val lastRowIndex: Int
         get() = this.map.lastIndex
@@ -41,7 +42,11 @@ class GameMap(private val map: List<List<MapElement>>) : ObservableState<GameMap
     }
 
     companion object {
-        fun getAdapterPosition(i: Int, j: Int) = j * 10 + i
+        fun getAdapterPosition(
+            i: Int,
+            j: Int,
+            mapHeight: Int = State.gameData.settings.mapHeight
+        ) = j * mapHeight + i
 
         fun getI(
             adapterPosition: Int,

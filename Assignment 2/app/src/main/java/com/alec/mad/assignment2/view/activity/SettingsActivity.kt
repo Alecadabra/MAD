@@ -3,13 +3,12 @@ package com.alec.mad.assignment2.view.activity
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.alec.mad.assignment2.R
 import com.alec.mad.assignment2.model.Settings
 import kotlin.math.roundToInt
@@ -18,7 +17,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private lateinit var views: Views
 
-    private var settings: Settings? = null
+    private lateinit var settings: Settings
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,9 +26,14 @@ class SettingsActivity : AppCompatActivity() {
 
         this.title = "Settings"
 
-        // Restore settings from intent or bundle, else initialise new settings
-        this.settings = writeBundleToSettings(this.settings ?: Settings(), intent.extras)
-        this.settings = writeBundleToSettings(this.settings ?: Settings(), savedInstanceState)
+        // Restore settings from intent and bundle
+        this.settings = Settings()
+        intent.extras?.also { extras ->
+            writeBundleToSettings(extras, this.settings)
+        }
+        if (savedInstanceState != null) {
+            writeBundleToSettings(savedInstanceState, this.settings)
+        }
 
         this.views = Views(
             islandNameEditText = findViewById(R.id.settingsActivityIslandNameEditText),
@@ -48,7 +52,7 @@ class SettingsActivity : AppCompatActivity() {
             saveButton = findViewById(R.id.settingsActivitySaveButton)
         )
 
-        this.settings?.also { nullSafeSettings ->
+        this.settings.also { nullSafeSettings ->
             this.views.islandNameEditText.setText(nullSafeSettings.islandName)
             this.views.mapWidthEditText.setText(nullSafeSettings.mapWidth.toString())
             this.views.mapHeightEditText.setText(nullSafeSettings.mapHeight.toString())
@@ -61,7 +65,7 @@ class SettingsActivity : AppCompatActivity() {
             this.views.houseCostText.text = "$${nullSafeSettings.houseBuildCost}"
             this.views.commercialCostText.text = "$${nullSafeSettings.commBuildCost}"
             this.views.roadCostText.text = "$${nullSafeSettings.roadBuildCost}"
-        } ?: error("Settings null")
+        }
 
         this.views.backButton.setOnClickListener { onBackPressed() }
         this.views.saveButton.setOnClickListener { save() }
@@ -71,7 +75,7 @@ class SettingsActivity : AppCompatActivity() {
         fun toast(text: String) { Toast.makeText(this, text, Toast.LENGTH_SHORT).show()  }
 
         // Get values from EditTexts and set result intent
-        this.settings?.also { nullSafeSettings ->
+        this.settings.also { nullSafeSettings ->
             nullSafeSettings.islandName = this.views.islandNameEditText.text.toString()
 
             this.views.mapWidthEditText.text?.toString()?.toIntOrNull()?.also { mapWidth ->
@@ -86,19 +90,19 @@ class SettingsActivity : AppCompatActivity() {
                 nullSafeSettings.initialMoney = initialMoney
             } ?: toast("Error: Initial money must be an integer")
 
-            Bundle().also { extras ->
-                writeSettingsToBundle(nullSafeSettings, extras)
-                setResult(RESULT_OK, Intent().also { it.putExtras(extras) })
-            }
-        } ?: error("Settings null")
+            val extras = Bundle()
+            val resultIntent = Intent()
+            writeSettingsToBundle(nullSafeSettings, extras)
+            resultIntent.putExtras(extras)
+            setResult(RESULT_OK, resultIntent)
+            println(resultIntent.getIntExtra(INITIAL_MONEY, -1))
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        this.settings?.also { nullSafeSettings ->
-            writeSettingsToBundle(nullSafeSettings, outState)
-        }
+        writeSettingsToBundle(this.settings, outState)
     }
 
     private class Views(
@@ -129,7 +133,9 @@ class SettingsActivity : AppCompatActivity() {
             c: Context,
             settings: Settings
         ): Intent = Intent(c, SettingsActivity::class.java).also { intent ->
-            intent.extras?.also { extras -> writeSettingsToBundle(settings, extras) }
+            val extras = Bundle()
+            writeSettingsToBundle(settings, extras)
+            intent.putExtras(extras)
         }
 
         fun writeSettingsToBundle(settings: Settings, bundle: Bundle) {
@@ -139,58 +145,31 @@ class SettingsActivity : AppCompatActivity() {
             bundle.putInt(INITIAL_MONEY, settings.initialMoney)
         }
 
-        fun writeBundleToSettings(settings: Settings, bundle: Bundle?): Settings {
-            return bundle?.let { nullSafeBundle ->
-                settings.also {
-                    it.islandName = getIslandNameOrNull(nullSafeBundle) ?: it.islandName
-                    it.mapWidth = getMapWidthOrNull(nullSafeBundle) ?: it.mapWidth
-                    it.mapHeight = getMapHeightOrNull(nullSafeBundle) ?: it.mapHeight
-                    it.initialMoney = getInitialMoneyOrNull(nullSafeBundle) ?: it.initialMoney
-                }
-            } ?: settings
+        fun writeBundleToSettings(bundle: Bundle, settings: Settings) {
+            settings.islandName = getIslandNameOrNull(bundle) ?: settings.islandName
+            settings.mapWidth = getMapWidthOrNull(bundle) ?: settings.mapWidth
+            settings.mapHeight = getMapHeightOrNull(bundle) ?: settings.mapHeight
+            settings.initialMoney = getInitialMoneyOrNull(bundle) ?: settings.initialMoney
         }
 
-        private fun getIslandNameOrNull(bundle: Bundle?) = bundle?.getString(ISLAND_NAME)?.also {
-            Log.d("SettingsActivity", "Resolved island name ($it)")
-        } ?: run { Log.d("SettingsActivity", "Failed to resolve island name"); null }
+        private fun getIslandNameOrNull(bundle: Bundle?) = bundle?.getString(
+            ISLAND_NAME,
+            Settings.Default.ISLAND_NAME
+        ).let { if (it == Settings.Default.ISLAND_NAME) null else it }
 
         private fun getMapWidthOrNull(bundle: Bundle?) = bundle?.getInt(
             MAP_WIDTH,
             Settings.Default.MAP_WIDTH
-        ).let {
-            if (it == Settings.Default.MAP_WIDTH) {
-                Log.d("SettingsActivity", "Failed to resolve map width")
-                null
-            } else {
-                Log.d("SettingsActivity", "Resolved map width ($it)")
-                it
-            }
-        }
+        ).let { if (it == Settings.Default.MAP_WIDTH) null else it }
 
         private fun getMapHeightOrNull(bundle: Bundle?) = bundle?.getInt(
             MAP_HEIGHT,
             Settings.Default.MAP_HEIGHT
-        ).let {
-            if (it == Settings.Default.MAP_HEIGHT) {
-                Log.d("SettingsActivity", "Failed to resolve map ht")
-                null
-            } else {
-                Log.d("SettingsActivity", "Resolved map height ($it)")
-                it
-            }
-        }
+        ).let { if (it == Settings.Default.MAP_HEIGHT) null else it }
 
         private fun getInitialMoneyOrNull(bundle: Bundle?) = bundle?.getInt(
             INITIAL_MONEY,
             Settings.Default.INITIAL_MONEY
-        ).let {
-            if (it == Settings.Default.INITIAL_MONEY) {
-                Log.d("SettingsActivity", "Failed to resolve init money")
-                null
-            } else {
-                Log.d("SettingsActivity", "Resolved initial money ($it)")
-                it
-            }
-        }
+        ).let { if (it == Settings.Default.INITIAL_MONEY) null else it }
     }
 }

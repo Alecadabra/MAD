@@ -1,6 +1,7 @@
 package com.alec.mad.assignment2.view.fragment
 
 import android.os.Bundle
+import android.view.Gravity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -13,7 +14,6 @@ import com.alec.mad.assignment2.R
 import com.alec.mad.assignment2.model.GameData.Tool
 import com.alec.mad.assignment2.model.GameMap
 import com.alec.mad.assignment2.model.observer.GameMapObserver
-import com.alec.mad.assignment2.model.Settings
 import com.alec.mad.assignment2.singleton.State
 import com.alec.mad.assignment2.view.activity.DetailsActivity
 
@@ -113,14 +113,28 @@ class MapTileGridFragment : Fragment(), GameMapObserver {
                         Tool.DEMOLISH -> {
                             if (mapElement.structure != null) {
                                 mapElement.structure = null
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "Select a tile with a structure to demolish info",
+                                    Toast.LENGTH_SHORT
+                                ).also { it.setGravity(Gravity.CENTER, 0, 0) }.show()
                             }
                         }
                         Tool.INFO -> {
-                            this@MapTileGridFragment.activity?.also { nullSafeActivity ->
-                                val intent = DetailsActivity.getIntent(
-                                    nullSafeActivity, i, j
-                                )
-                                nullSafeActivity.startActivity(intent)
+                            if (mapElement.structure != null) {
+                                this@MapTileGridFragment.activity?.also { nullSafeActivity ->
+                                    val intent = DetailsActivity.getIntent(
+                                        nullSafeActivity, i, j
+                                    )
+                                    nullSafeActivity.startActivity(intent)
+                                } ?: error("Activity null")
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "Select a tile with a structure to view info",
+                                    Toast.LENGTH_SHORT
+                                ).also { it.setGravity(Gravity.CENTER, 0, 0) }.show()
                             }
                         }
                     }
