@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.activity.GameActivity"
+    tools:ignore="ContentDescription,UnusedAttribute,HardcodedText">
+
+    <FrameLayout
+        android:id="@+id/mapActivityMapTileGridFrame"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/mapActivityToolFrame"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/mapActivityToolFrame"
+        android:layout_width="0dp"
+        android:layout_height="70dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <LinearLayout
+        android:id="@+id/mapActivityToolSelector"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/mapActivityToolFrame"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="@dimen/mapScreenMargin"
+        android:layout_marginRight="@dimen/mapScreenMargin"
+        android:layout_marginBottom="@dimen/mapScreenMargin"
+        android:orientation="horizontal"
+        style="@style/Widget.AppCompat.Button.Small"
+        android:clickable="false"
+        android:backgroundTint="#ffffff">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tools"
+            android:textAllCaps="true"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/mapActivityToolSelectorResidential"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:paddingHorizontal="8dp"
+            android:layout_width="@dimen/imageButtonSize"
+            android:layout_height="@dimen/imageButtonSize"
+            android:src="@drawable/ic_building4"/>
+
+        <ImageButton
+            android:id="@+id/mapActivityToolSelectorCommercial"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:layout_width="@dimen/imageButtonSize"
+            android:layout_height="@dimen/imageButtonSize"
+            android:src="@drawable/ic_building5" />
+
+        <ImageButton
+            android:id="@+id/mapActivityToolSelectorRoad"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:layout_width="@dimen/imageButtonSize"
+            android:layout_height="@dimen/imageButtonSize"
+            android:src="@drawable/ic_road_ew" />
+
+        <ImageButton
+            android:id="@+id/mapActivityToolSelectorDemolish"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:layout_width="@dimen/imageButtonSize"
+            android:layout_height="@dimen/imageButtonSize"
+            android:src="@drawable/ic_demolish" />
+
+        <ImageButton
+            android:id="@+id/mapActivityToolSelectorInfo"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:layout_width="@dimen/imageButtonSize"
+            android:layout_height="@dimen/imageButtonSize"
+            android:src="@drawable/ic_info" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/mapActivityTimeStepLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/mapScreenMargin"
+        android:layout_marginRight="@dimen/mapScreenMargin"
+        android:layout_marginBottom="4dp"
+        app:layout_constraintBottom_toTopOf="@id/mapActivityToolSelector"
+        app:layout_constraintRight_toRightOf="parent"
+        android:orientation="horizontal"
+        style="@style/Widget.AppCompat.Button.Small"
+        android:backgroundTint="#ffffff"
+        android:clickable="false">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Time"
+            android:textAllCaps="true"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/mapActivityTimeStep"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:layout_width="@dimen/imageButtonSize"
+            android:layout_height="@dimen/imageButtonSize"
+            android:src="@drawable/ic_timestep" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/mapActivityStatusBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/mapScreenMargin"
+        android:layout_marginTop="@dimen/mapScreenMargin"
+        android:clickable="false"
+        android:gravity="bottom"
+        android:orientation="horizontal"
+        android:padding="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/mapActivityStatusBarTime"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#ffffff"
+            android:clickable="false"
+            android:paddingHorizontal="16dp"
+            android:text="Time: ?"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/mapActivityStatusBarPopulation"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#ffffff"
+            android:clickable="false"
+            android:paddingHorizontal="16dp"
+            android:text="Population: ?"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/mapActivityStatusBarTemperature"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#ffffff"
+            android:clickable="false"
+            android:paddingHorizontal="16dp"
+            android:text="Temp: ?"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/mapActivityStatusBarMoney"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#ffffff"
+            android:clickable="false"
+            android:paddingHorizontal="16dp"
+            android:text="Money: ?"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/mapActivityStatusBarIncome"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#ffffff"
+            android:clickable="false"
+            android:paddingHorizontal="16dp"
+            android:text="Income: ?"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/mapActivityStatusBarEmployment"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#ffffff"
+            android:clickable="false"
+            android:paddingHorizontal="16dp"
+            android:text="Employment: ?"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/mapActivityToolText"
+        style="@style/Widget.AppCompat.Button.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="@dimen/mapScreenMargin"
+        android:backgroundTint="@android:color/background_light"
+        android:clickable="false"
+        android:gravity="center_vertical"
+        android:text="Selected Tool\nBuild - Residential"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mapActivityStatusBar" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

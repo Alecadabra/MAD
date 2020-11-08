@@ -11,45 +11,35 @@ import com.alec.mad.assignment2.controller.database.DatabaseSchema.SettingsTable
 import com.alec.mad.assignment2.controller.database.DatabaseSchema.StructuresTable
 import com.alec.mad.assignment2.model.GameMap
 import com.alec.mad.assignment2.model.StructureType
-import com.alec.mad.assignment2.model.observer.GameDataObserver
-import com.alec.mad.assignment2.model.observer.GameMapObserver
-import com.alec.mad.assignment2.model.observer.ObservableState
-import com.alec.mad.assignment2.model.observer.SettingsObserver
+import com.alec.mad.assignment2.controller.observer.GameDataObserver
+import com.alec.mad.assignment2.controller.observer.GameMapObserver
+import com.alec.mad.assignment2.controller.observer.ObservableState
+import com.alec.mad.assignment2.controller.observer.SettingsObserver
 import com.alec.mad.assignment2.singleton.State
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
+/**
+ * Handles database queries, observes changes to the overall game state and updates the database
+ * for changes to mutable settings, structure placements on the map and persistable game data
+ * changes.
+ */
 class DatabaseManager(context: Context?) : GameDataObserver, GameMapObserver, SettingsObserver {
 
     private val dbHelper = DatabaseHelper(context)
     private val db = this.dbHelper.writableDatabase
 
     val gameDataCursor: GameDataCursor
-        get() = GameDataCursor(
-            db.query(
-                GameDataTable.NAME, null, null, null, null, null, null
-            )
-        )
+        get() = GameDataCursor(db.query(GameDataTable.NAME, null, null, null, null, null, null))
 
     val structuresCursor: StructuresCursor
-        get() = StructuresCursor(
-            db.query(
-                StructuresTable.NAME, null, null, null, null, null, null
-            )
-        )
+        get() = StructuresCursor(db.query(StructuresTable.NAME, null, null, null, null, null, null))
 
     val settingsCursor: SettingsCursor
-        get() = SettingsCursor(
-            db.query(
-                SettingsTable.NAME, null, null, null, null, null, null
-            )
-        )
+        get() = SettingsCursor(db.query(SettingsTable.NAME, null, null, null, null, null, null))
 
-    fun startListening() {
+    fun observe() {
         // Register to observers, and look cool doing it
         setOf<ObservableState<in DatabaseManager>>(
-            State.gameData, State.gameData.map, State.gameData.settings
+            State.gameData, State.gameData.gameMap, State.gameData.settings
         ).forEach { observableState ->
             observableState.observers.add(this@DatabaseManager)
             observableState.notifyMe(this@DatabaseManager)
@@ -64,7 +54,7 @@ class DatabaseManager(context: Context?) : GameDataObserver, GameMapObserver, Se
         this.db.delete(StructuresTable.NAME, null, null)
     }
 
-    fun clearSettingsTable() {
+    private fun clearSettingsTable() {
         this.db.delete(SettingsTable.NAME, null, null)
     }
 
@@ -89,7 +79,7 @@ class DatabaseManager(context: Context?) : GameDataObserver, GameMapObserver, Se
                 }
             )
         } else {
-            // Delete this structure
+            // Delete this structure in the database
             this@DatabaseManager.db.delete(
                 StructuresTable.NAME,
                 "${StructuresTable.Cols.ADAPTER_POSITION} = ?",
@@ -98,13 +88,17 @@ class DatabaseManager(context: Context?) : GameDataObserver, GameMapObserver, Se
         }
     }
 
+    override fun onUpdateIslandName(islandName: String) { updateSettingsTable() }
     override fun onUpdateMapWidth(mapWidth: Int) { updateSettingsTable() }
     override fun onUpdateMapHeight(mapHeight: Int) { updateSettingsTable() }
     override fun onUpdateInitialMoney(initialMoney: Int) { updateSettingsTable() }
 
+    /**
+     * Updates the database settings table, called when changes are made to the settings.
+     */
     private fun updateSettingsTable() {
         val settings = State.gameData.settings
-        val cols = setOf(
+        setOf(
             SettingsTable.Cols.MAP_WIDTH to settings.mapWidth,
             SettingsTable.Cols.MAP_HEIGHT to settings.mapHeight,
             SettingsTable.Cols.INITIAL_MONEY to settings.initialMoney
@@ -113,7 +107,12 @@ class DatabaseManager(context: Context?) : GameDataObserver, GameMapObserver, Se
         this@DatabaseManager.db.insert(
             SettingsTable.NAME,
             null,
-            ContentValues().also { cv -> cols.forEach { cv.put(it.first, it.second) } }
+            ContentValues().also { cv ->
+                cv.put(SettingsTable.Cols.ISLAND_NAME, settings.islandName)
+                cv.put(SettingsTable.Cols.MAP_WIDTH, settings.mapWidth)
+                cv.put(SettingsTable.Cols.MAP_HEIGHT, settings.mapHeight)
+                cv.put(SettingsTable.Cols.INITIAL_MONEY, settings.initialMoney)
+            }
         )
     }
 
@@ -134,11 +133,16 @@ class DatabaseManager(context: Context?) : GameDataObserver, GameMapObserver, Se
         }
     }
 
+    /**
+     * Updates the game data table, called when changes are made to persistent parts of the
+     * game data.
+     */
     private fun updateGameDataTable(
         gameTime: Int = State.gameData.gameTime,
         money: Int = State.gameData.money,
         income: Int = State.gameData.income
     ) {
+        // Values to store in content values
         val cols = setOf(
             GameDataTable.Cols.GAME_TIME to gameTime,
             GameDataTable.Cols.MONEY to money,
@@ -152,6 +156,9 @@ class DatabaseManager(context: Context?) : GameDataObserver, GameMapObserver, Se
         )
     }
 
+    /**
+     * DatabaseHelper Implementation - creates tables
+     */
     private inner class DatabaseHelper(
         context: Context?
     ) : SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
@@ -174,6 +181,7 @@ class DatabaseManager(context: Context?) : GameDataObserver, GameMapObserver, Se
             database.execSQL(
                 """
                     CREATE TABLE ${SettingsTable.NAME} (
+                        ${SettingsTable.Cols.ISLAND_NAME} TEXT,
                         ${SettingsTable.Cols.MAP_WIDTH} INTEGER,
                         ${SettingsTable.Cols.MAP_HEIGHT} INTEGER,
                         ${SettingsTable.Cols.INITIAL_MONEY} INTEGER
@@ -195,6 +203,9 @@ class DatabaseManager(context: Context?) : GameDataObserver, GameMapObserver, Se
         override fun onUpgrade(database: SQLiteDatabase?, p1: Int, p2: Int) {}
     }
 
+    /**
+     * Interface to retrieve the persistent game data from the database
+     */
     class GameDataCursor(cursor: Cursor) : CursorWrapper(cursor) {
         val gameTime: Int
             get() = getInt(getColumnIndex(GameDataTable.Cols.GAME_TIME))
@@ -206,6 +217,9 @@ class DatabaseManager(context: Context?) : GameDataObserver, GameMapObserver, Se
             get() = getInt(getColumnIndex(GameDataTable.Cols.INCOME))
     }
 
+    /**
+     * Interface to retrieve the built structures info from the database
+     */
     class StructuresCursor(cursor: Cursor) : CursorWrapper(cursor) {
         val adapterPosition: Int
             get() = getInt(getColumnIndex(StructuresTable.Cols.ADAPTER_POSITION))
@@ -220,7 +234,13 @@ class DatabaseManager(context: Context?) : GameDataObserver, GameMapObserver, Se
             get() = getString(getColumnIndex(StructuresTable.Cols.STRUCTURE_NAME))
     }
 
+    /**
+     * Interface to retrieve the persistent settings from the database
+     */
     class SettingsCursor(cursor: Cursor) : CursorWrapper(cursor) {
+        val islandName: String
+            get() = getString(getColumnIndex(SettingsTable.Cols.ISLAND_NAME))
+
         val mapWidth: Int
             get() = getInt(getColumnIndex(SettingsTable.Cols.MAP_WIDTH))
 

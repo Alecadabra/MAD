@@ -8,6 +8,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.alec.mad.assignment2.R
 
+/**
+ * A fragment to be placed in the [com.alec.mad.assignment2.view.activity.GameActivity]'s
+ * bottom frame to show a simple text field describing the tool's use.
+ */
 class SimpleToolFragment(private var text: String? = null) : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +41,7 @@ class SimpleToolFragment(private var text: String? = null) : Fragment() {
     }
 
     companion object {
-        private const val PACKAGE = "com.alec.mad.assignment2.view.fragment.SimpleToolFragment"
-        const val BUNDLE_TEXT = "$PACKAGE.text"
+        private const val PATH = "com.alec.mad.assignment2.view.fragment.SimpleToolFragment"
+        const val BUNDLE_TEXT = "$PATH.text"
     }
 }

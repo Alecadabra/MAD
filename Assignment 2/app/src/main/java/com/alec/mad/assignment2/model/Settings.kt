@@ -1,12 +1,16 @@
 package com.alec.mad.assignment2.model
 
-import com.alec.mad.assignment2.model.observer.ObservableState
-import com.alec.mad.assignment2.model.observer.SettingsObserver
-import kotlin.properties.Delegates
+import com.alec.mad.assignment2.controller.observer.ObservableState
+import com.alec.mad.assignment2.controller.observer.SettingsObserver
 import kotlin.properties.Delegates.observable
 
+/**
+ * Holds all of the game's settings, some mutable, most not.
+ */
 class Settings : ObservableState<SettingsObserver>() {
-    var islandName = Default.ISLAND_NAME
+    var islandName: String by observable(initialValue = Default.ISLAND_NAME) { _, _, newValue ->
+        notifyObservers { it.onUpdateIslandName(newValue) }
+    }
     var mapWidth: Int by observable(initialValue = Default.MAP_WIDTH) { _, _, newValue ->
         notifyObservers { it.onUpdateMapWidth(newValue) }
     }
@@ -27,12 +31,16 @@ class Settings : ObservableState<SettingsObserver>() {
 
     override fun notifyMe(them: SettingsObserver) {
         them.apply {
+            onUpdateIslandName(islandName)
             onUpdateMapWidth(mapWidth)
             onUpdateMapHeight(mapHeight)
             onUpdateInitialMoney(initialMoney)
         }
     }
 
+    /**
+     * Default values for all settings.
+     */
     object Default {
         const val ISLAND_NAME = "My Island"
         const val MAP_WIDTH = 50

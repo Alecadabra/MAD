@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:ignore="ContentDescription"
     android:layout_width="wrap_content"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <ImageButton
         android:id="@+id/buildToolElementStructureBtn"
@@ -15,8 +15,17 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:scaleType="fitXY"
-        android:adjustViewBounds="true" />
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/buildToolElementTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        app:layout_constraintBottom_toBottomOf="@+id/buildToolElementStructureBtn"
+        app:layout_constraintEnd_toEndOf="@+id/buildToolElementStructureBtn"
+        app:layout_constraintStart_toStartOf="@+id/buildToolElementStructureBtn"
+        app:layout_constraintTop_toTopOf="@+id/buildToolElementStructureBtn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

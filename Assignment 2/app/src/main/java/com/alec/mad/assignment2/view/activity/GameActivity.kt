@@ -11,16 +11,21 @@ import android.widget.TextView
 import android.widget.Toast
 import com.alec.mad.assignment2.R
 import com.alec.mad.assignment2.model.GameData.Tool
-import com.alec.mad.assignment2.model.observer.GameDataObserver
-import com.alec.mad.assignment2.model.Settings
+import com.alec.mad.assignment2.controller.observer.GameDataObserver
 import com.alec.mad.assignment2.singleton.State
 import com.alec.mad.assignment2.view.fragment.MapTileGridFragment
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
+/**
+ * Activity to display the main game screen
+ */
 @SuppressLint("SetTextI18n")
-class MapActivity : AppCompatActivity(), GameDataObserver {
+class GameActivity : AppCompatActivity(), GameDataObserver {
 
+    /**
+     * View references.
+     */
     private lateinit var views: Views
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,13 +51,11 @@ class MapActivity : AppCompatActivity(), GameDataObserver {
         // Bring in map tile grid fragment
         supportFragmentManager.findFragmentById(R.id.mapActivityMapTileGridFrame)
             ?: supportFragmentManager.beginTransaction().also { transaction ->
-                transaction.add(
-                    R.id.mapActivityMapTileGridFrame,
-                    MapTileGridFragment()
-                )
+                transaction.add(R.id.mapActivityMapTileGridFrame, MapTileGridFragment())
                 transaction.commit()
         }
 
+        // Observe changes to the game data
         State.gameData.observers.add(this)
         State.gameData.notifyMe(this)
 
@@ -113,9 +116,8 @@ class MapActivity : AppCompatActivity(), GameDataObserver {
         this.views.statsPopulation.text = "$population Residents"
     }
 
-    override fun onUpdateTemperature(temperature: Int?) {
-        val nullSafeTemperature = "Temperature: ${temperature ?: "..."}"
-        this.views.statsTemperature.text = nullSafeTemperature
+    override fun onUpdateTemperature(temperature: String) {
+        this.views.statsTemperature.text = "Temperature: $temperature"
     }
 
     override fun onUpdateMoney(money: Int) {
@@ -160,7 +162,10 @@ class MapActivity : AppCompatActivity(), GameDataObserver {
         this.views.statsEmployment.text = "${(employmentRate * 100).roundToInt()}% Employment"
     }
 
-    class Views(
+    /**
+     * Holder for view instances.
+     */
+    private class Views(
         val statsTime: TextView,
         val statsPopulation: TextView,
         val statsTemperature: TextView,
@@ -175,6 +180,9 @@ class MapActivity : AppCompatActivity(), GameDataObserver {
         val timeStep: ImageButton,
         val toolText: TextView
     ) {
+        /**
+         * All of the tool buttons.
+         */
         val tools = setOf(toolResidential, toolCommercial, toolRoad, toolDemolish, toolInfo)
 
         private val toolButtonPairs = setOf(
@@ -185,8 +193,14 @@ class MapActivity : AppCompatActivity(), GameDataObserver {
             Tool.INFO to this.toolInfo
         )
 
+        /**
+         * Maps tool enums to their button's.
+         */
         val toolsToButtons: Map<Tool, ImageButton> = toolButtonPairs.toMap()
 
+        /**
+         * Maps buttons to their Tool enum's.
+         */
         val buttonsToTools: Map<ImageButton, Tool> = this.toolButtonPairs.map {
             // Flip pairs
             it.second to it.first
@@ -194,6 +208,6 @@ class MapActivity : AppCompatActivity(), GameDataObserver {
     }
 
     companion object {
-        fun getIntent(c: Context): Intent = Intent(c, MapActivity::class.java)
+        fun getIntent(c: Context): Intent = Intent(c, GameActivity::class.java)
     }
 }

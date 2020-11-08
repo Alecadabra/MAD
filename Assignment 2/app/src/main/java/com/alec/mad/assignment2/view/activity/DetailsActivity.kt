@@ -3,25 +3,40 @@ package com.alec.mad.assignment2.view.activity
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Editable
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import com.alec.mad.assignment2.R
+import com.alec.mad.assignment2.controller.RequestCodes
 import com.alec.mad.assignment2.controller.ThumbnailHandler
 import com.alec.mad.assignment2.model.ImageBitmapStructure
 import com.alec.mad.assignment2.singleton.State
 
+/**
+ * Activity to view and edit the details of a structure placed on the game map.
+ */
 class DetailsActivity(
     private var row: Int? = null,
     private var col: Int? = null
 ) : AppCompatActivity() {
 
+    /**
+     * View references.
+     */
     private lateinit var views: Views
 
+    /**
+     * Handles taking the thumbnail image.
+     */
     private var thumbnailHandler: ThumbnailHandler? = null
+
+    /**
+     * Thumbnail returned from the [thumbnailHandler] or null.
+     */
+    private var bmp: Bitmap? = null
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,13 +45,9 @@ class DetailsActivity(
 
         this.title = "Structure Details"
 
-        this.thumbnailHandler = ThumbnailHandler(this, THUMBNAIL_REQUEST_CODE)
+        this.thumbnailHandler = ThumbnailHandler(this, RequestCodes.THUMBNAIL)
 
-        savedInstanceState?.also { bundle ->
-            this.row ?: run { this.row = bundle.getInt(BUNDLE_ROW) }
-            this.col ?: run { this.col = bundle.getInt(BUNDLE_COL) }
-        }
-
+        // Get values for row/col from intent
         this.row ?: run {
             val localRow = this.intent.getIntExtra(BUNDLE_ROW, -1)
             if (localRow != -1) {
@@ -50,9 +61,17 @@ class DetailsActivity(
             }
         }
 
+        // Get values for row/col from bundle
+        savedInstanceState?.also { bundle ->
+            this.row ?: run { this.row = bundle.getInt(BUNDLE_ROW) }
+            this.col ?: run { this.col = bundle.getInt(BUNDLE_COL) }
+        }
+
+        // Assert row/col values set
         val i = this.row ?: error("Row not set")
         val j = this.col ?: error("Col not set")
-        val mapElement = State.gameData.map[i, j]
+
+        val mapElement = State.gameData.gameMap[i, j]
         val structure = mapElement.structure ?: error("Row/Col do not contain a structure")
 
         this.views = Views(
@@ -60,7 +79,8 @@ class DetailsActivity(
             structureTypeTextView = findViewById(R.id.detailsActivityStructureTypeValue),
             nameTextView = findViewById(R.id.detailsActivityNameValue),
             photoButton = findViewById(R.id.detailsActivityPhotoButton),
-            backButton = findViewById(R.id.detailsActivityBackButton)
+            backButton = findViewById(R.id.detailsActivityBackButton),
+            saveButton = findViewById(R.id.detailsActivitySaveButton)
         )
 
         this.views.gridCoordsTextView.text = "Row: ${i + 1}, Col: ${j + 1}"
@@ -70,27 +90,18 @@ class DetailsActivity(
         this.views.nameTextView.setText(structure.name)
 
         this.views.photoButton.setOnClickListener {
-            this.thumbnailHandler?.takeThumbnail()
-                ?: error("Thumbnail handler not set")
+            this.thumbnailHandler?.takeThumbnail() ?: error("Thumbnail handler not set")
         }
 
         this.views.backButton.setOnClickListener { onBackPressed() }
+        this.views.saveButton.setOnClickListener { save() }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == THUMBNAIL_REQUEST_CODE) {
-            val i = this.row
-            val j = this.col
-            val bmp = this.thumbnailHandler?.getResult(resultCode, data)
-            if (i != null && j != null && bmp != null) {
-                State.gameData.map[i, j].structure = ImageBitmapStructure(
-                    structure = State.gameData.map[i, j].structure
-                        ?: error("No structure at map element"),
-                    imageBitmap = bmp
-                )
-            }
+        if (requestCode == RequestCodes.THUMBNAIL) {
+            this.bmp = this.thumbnailHandler?.getResult(resultCode, data)
         }
     }
 
@@ -101,34 +112,45 @@ class DetailsActivity(
         this.col?.also { outState.putInt(BUNDLE_COL, it) }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-
-        // Set structure name from EditText
+    /**
+     * Save the thumbnail image and custom structure name if either are non-null
+     */
+    private fun save() {
         val i = this.row
         val j = this.col
-        if (i != null && j != null && this::views.isInitialized) {
-            State.gameData.map[i, j].structure?.also { structure ->
+        if (i != null && j != null) {
+            // Set bmp if non null
+            this.bmp?.also { nullSafeBmp ->
+                State.gameData.gameMap[i, j].structure = ImageBitmapStructure(
+                    structure = State.gameData.gameMap[i, j].structure
+                        ?: error("No structure at map element"),
+                    imageBitmap = nullSafeBmp
+                )
+            }
+            // Set name
+            State.gameData.gameMap[i, j].structure?.also { structure ->
                 structure.name = this.views.nameTextView.text.toString()
-                State.gameData.map[i, j].structure = structure
+                State.gameData.gameMap[i, j].structure = structure
             }
         }
     }
 
+    /**
+     * Holder for view instances.
+     */
     private class Views(
         val gridCoordsTextView: TextView,
         val structureTypeTextView: TextView,
         val nameTextView: EditText,
         val photoButton: Button,
-        val backButton: Button
+        val backButton: Button,
+        val saveButton: Button
     )
 
     companion object {
-        private const val PACKAGE = "com.alec.mad.assignment2.view.activity.DetailsActivity"
-        const val BUNDLE_ROW = "$PACKAGE.row"
-        const val BUNDLE_COL = "$PACKAGE.col"
-
-        const val THUMBNAIL_REQUEST_CODE = 1
+        private const val PATH = "com.alec.mad.assignment2.view.activity.DetailsActivity"
+        const val BUNDLE_ROW = "$PATH.row"
+        const val BUNDLE_COL = "$PATH.col"
 
         fun getIntent(c: Context, row: Int, col: Int): Intent = Intent(
             c, DetailsActivity::class.java

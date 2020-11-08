@@ -13,10 +13,14 @@ import android.widget.Toast
 import com.alec.mad.assignment2.R
 import com.alec.mad.assignment2.model.GameData.Tool
 import com.alec.mad.assignment2.model.GameMap
-import com.alec.mad.assignment2.model.observer.GameMapObserver
+import com.alec.mad.assignment2.controller.observer.GameMapObserver
+import com.alec.mad.assignment2.model.StructureType
 import com.alec.mad.assignment2.singleton.State
 import com.alec.mad.assignment2.view.activity.DetailsActivity
 
+/**
+ * RecyclerView fragment to show the game map.
+ */
 class MapTileGridFragment : Fragment(), GameMapObserver {
 
     private var rv: RecyclerView? = null
@@ -38,7 +42,9 @@ class MapTileGridFragment : Fragment(), GameMapObserver {
         )
         this.rv?.adapter = MapTileGridAdapter()
 
-        State.gameData.map.observers.add(this)
+        // Observe changes to the game map
+        State.gameData.gameMap.observers.add(this)
+        State.gameData.gameMap.notifyMe(this)
 
         return view
     }
@@ -46,10 +52,12 @@ class MapTileGridFragment : Fragment(), GameMapObserver {
     override fun onDestroy() {
         super.onDestroy()
 
-        State.gameData.map.observers.remove(this)
+        // Stop observing the game map
+        State.gameData.gameMap.observers.remove(this)
     }
 
     override fun onUpdateMapElement(i: Int, j: Int, mapElement: GameMap.MapElement) {
+        // When a map element changes, notify the adapter
         this.rv?.adapter?.also { adapter ->
             adapter.notifyItemChanged(GameMap.getAdapterPosition(i, j))
         }
@@ -69,10 +77,12 @@ class MapTileGridFragment : Fragment(), GameMapObserver {
         override fun onBindViewHolder(holder: MapTileViewHolder, position: Int) {
             val i = GameMap.getI(position)
             val j = GameMap.getJ(position)
-            holder.bindViewHolder(State.gameData.map[i, j], i, j)
+            holder.bindViewHolder(State.gameData.gameMap[i, j], i, j)
         }
 
-        override fun getItemCount(): Int = State.gameData.settings.mapHeight * State.gameData.settings.mapWidth
+        override fun getItemCount(): Int = State.gameData.settings.let { settings ->
+            settings.mapWidth * settings.mapWidth
+        }
 
         inner class MapTileViewHolder(
             val view: View,
@@ -97,31 +107,51 @@ class MapTileGridFragment : Fragment(), GameMapObserver {
             }
 
             fun bindViewHolder(mapElement: GameMap.MapElement, i: Int, j: Int) {
+                // Set images
                 this.bgImageView.setImageResource(mapElement.bgImage)
                 mapElement.structure?.drawImageTo(this.structureImageView) ?: run {
                     this.structureImageView.setImageResource(android.R.color.transparent)
                 }
+
                 view.setOnClickListener {
                     when (State.gameData.currentTool) {
+
                         Tool.BUILD_RESIDENTIAL, Tool.BUILD_COMMERCIAL, Tool.BUILD_ROAD -> {
+                            // Invoke the current build intent show error if null
                             State.gameData.buildIntent?.buildAt(i, j) ?: Toast.makeText(
                                 this@MapTileGridFragment.context,
                                 "You don't have a structure selected",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
+
                         Tool.DEMOLISH -> {
+                            // Delete the structure or show error if null
                             if (mapElement.structure != null) {
+                                // First update game state
+                                when (mapElement.structure?.structureType) {
+                                    StructureType.RESIDENTIAL -> {
+                                        State.gameData.numResidential--
+                                    }
+                                    StructureType.COMMERCIAL -> {
+                                        State.gameData.numCommercial--
+                                    }
+                                    else -> Unit // Do nothing
+                                }
+
+                                // Remove the structure
                                 mapElement.structure = null
                             } else {
                                 Toast.makeText(
                                     context,
-                                    "Select a tile with a structure to demolish info",
+                                    "Select a tile with a structure to demolish",
                                     Toast.LENGTH_SHORT
                                 ).also { it.setGravity(Gravity.CENTER, 0, 0) }.show()
                             }
                         }
+
                         Tool.INFO -> {
+                            // Start the details activity on the structure or show error if null
                             if (mapElement.structure != null) {
                                 this@MapTileGridFragment.activity?.also { nullSafeActivity ->
                                     val intent = DetailsActivity.getIntent(

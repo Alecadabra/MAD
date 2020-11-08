@@ -1,8 +1,11 @@
-package com.alec.mad.assignment2.model.observer
+package com.alec.mad.assignment2.controller.observer
 
 import com.alec.mad.assignment2.controller.BuildIntent
 import com.alec.mad.assignment2.model.GameData
 
+/**
+ * Implementing classes observe changes to a [GameData] object.
+ */
 interface GameDataObserver {
 
     fun onUpdateMoney(money: Int) {}
@@ -23,6 +26,6 @@ interface GameDataObserver {
 
     fun onUpdateCurrentTool(currentTool: GameData.Tool) {}
 
-    fun onUpdateTemperature(temperature: Int?) {}
+    fun onUpdateTemperature(temperature: String) {}
 
 }

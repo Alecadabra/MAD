@@ -13,10 +13,19 @@ import com.alec.mad.assignment2.R
 import com.alec.mad.assignment2.model.Settings
 import kotlin.math.roundToInt
 
+/**
+ * Activity to edit and view a [Settings] object.
+ */
 class SettingsActivity : AppCompatActivity() {
 
+    /**
+     * View references.
+     */
     private lateinit var views: Views
 
+    /**
+     * Settings to view/edit.
+     */
     private lateinit var settings: Settings
 
     @SuppressLint("SetTextI18n")
@@ -71,6 +80,9 @@ class SettingsActivity : AppCompatActivity() {
         this.views.saveButton.setOnClickListener { save() }
     }
 
+    /**
+     * Save all mutable settings to a result intent and set as result.
+     */
     private fun save() {
         fun toast(text: String) { Toast.makeText(this, text, Toast.LENGTH_SHORT).show()  }
 
@@ -95,7 +107,6 @@ class SettingsActivity : AppCompatActivity() {
             writeSettingsToBundle(nullSafeSettings, extras)
             resultIntent.putExtras(extras)
             setResult(RESULT_OK, resultIntent)
-            println(resultIntent.getIntExtra(INITIAL_MONEY, -1))
         }
     }
 
@@ -105,6 +116,9 @@ class SettingsActivity : AppCompatActivity() {
         writeSettingsToBundle(this.settings, outState)
     }
 
+    /**
+     * Holds all view references.
+     */
     private class Views(
         val islandNameEditText: EditText,
         val mapWidthEditText: EditText,
@@ -123,11 +137,11 @@ class SettingsActivity : AppCompatActivity() {
     )
 
     companion object {
-        private const val PACKAGE = "com.alec.mad.assignment2.view.activity.SettingsActivity"
-        private const val ISLAND_NAME = "$PACKAGE.islandName"
-        private const val MAP_WIDTH = "$PACKAGE.mapWidth"
-        private const val MAP_HEIGHT = "$PACKAGE.mapHeight"
-        private const val INITIAL_MONEY = "$PACKAGE.initialMoney"
+        private const val PATH = "com.alec.mad.assignment2.view.activity.SettingsActivity"
+        private const val ISLAND_NAME = "$PATH.islandName"
+        private const val MAP_WIDTH = "$PATH.mapWidth"
+        private const val MAP_HEIGHT = "$PATH.mapHeight"
+        private const val INITIAL_MONEY = "$PATH.initialMoney"
 
         fun getIntent(
             c: Context,
@@ -138,6 +152,9 @@ class SettingsActivity : AppCompatActivity() {
             intent.putExtras(extras)
         }
 
+        /**
+         * Writes all mutable settings to the [bundle].
+         */
         fun writeSettingsToBundle(settings: Settings, bundle: Bundle) {
             bundle.putString(ISLAND_NAME, settings.islandName)
             bundle.putInt(MAP_WIDTH, settings.mapWidth)
@@ -145,6 +162,10 @@ class SettingsActivity : AppCompatActivity() {
             bundle.putInt(INITIAL_MONEY, settings.initialMoney)
         }
 
+        /**
+         * Puts all mutable settings from the [bundle] generated with [writeSettingsToBundle] to
+         * [settings].
+         */
         fun writeBundleToSettings(bundle: Bundle, settings: Settings) {
             settings.islandName = getIslandNameOrNull(bundle) ?: settings.islandName
             settings.mapWidth = getMapWidthOrNull(bundle) ?: settings.mapWidth
@@ -155,21 +176,21 @@ class SettingsActivity : AppCompatActivity() {
         private fun getIslandNameOrNull(bundle: Bundle?) = bundle?.getString(
             ISLAND_NAME,
             Settings.Default.ISLAND_NAME
-        ).let { if (it == Settings.Default.ISLAND_NAME) null else it }
+        )
 
         private fun getMapWidthOrNull(bundle: Bundle?) = bundle?.getInt(
             MAP_WIDTH,
             Settings.Default.MAP_WIDTH
-        ).let { if (it == Settings.Default.MAP_WIDTH) null else it }
+        )
 
         private fun getMapHeightOrNull(bundle: Bundle?) = bundle?.getInt(
             MAP_HEIGHT,
             Settings.Default.MAP_HEIGHT
-        ).let { if (it == Settings.Default.MAP_HEIGHT) null else it }
+        )
 
         private fun getInitialMoneyOrNull(bundle: Bundle?) = bundle?.getInt(
             INITIAL_MONEY,
             Settings.Default.INITIAL_MONEY
-        ).let { if (it == Settings.Default.INITIAL_MONEY) null else it }
+        )
     }
 }

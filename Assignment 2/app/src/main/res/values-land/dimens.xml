@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="imageButtonSize">40dp</dimen>
-    <dimen name="mapScreenMargin">2dp</dimen>
+    <dimen name="imageButtonSize">53dp</dimen>
+    <dimen name="mapScreenMargin">16dp</dimen>
     <dimen name="menuPadding">8dp</dimen>
 </resources>

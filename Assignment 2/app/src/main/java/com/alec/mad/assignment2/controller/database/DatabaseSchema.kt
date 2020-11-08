@@ -1,5 +1,8 @@
 package com.alec.mad.assignment2.controller.database
 
+/**
+ * Database schema used by [DatabaseManager].
+ */
 object DatabaseSchema {
     object GameDataTable {
         const val NAME = "gameData"
@@ -21,6 +24,7 @@ object DatabaseSchema {
     object SettingsTable {
         const val NAME = "settings"
         object Cols {
+            const val ISLAND_NAME = "islandName"
             const val MAP_WIDTH = "mapWidth"
             const val MAP_HEIGHT = "mapHeight"
             const val INITIAL_MONEY = "initialMoney"

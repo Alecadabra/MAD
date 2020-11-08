@@ -5,14 +5,24 @@ import android.widget.ImageView
 import androidx.annotation.DrawableRes
 import java.util.Locale
 
+/**
+ * Abstract representation of a Structure to be place on a [GameMap]. Derived classes provide
+ * an implementation of [drawImageTo].
+ */
 sealed class Structure(
     val structureType: StructureType,
     @DrawableRes val imageId: Int,
     var name: String = structureType.toString()
 )  {
+    /**
+     * Draw this structure's image to the given [ImageView].
+     */
     abstract fun drawImageTo(view: ImageView)
 }
 
+/**
+ * A [Structure] that uses a [DrawableRes] image id as it's image.
+ */
 class ImageIDStructure(
     structureType: StructureType,
     @DrawableRes imageId: Int,
@@ -24,6 +34,9 @@ class ImageIDStructure(
     }
 }
 
+/**
+ * A [Structure] that uses a [Bitmap] object as it's image.
+ */
 class ImageBitmapStructure(
     structureType: StructureType,
     @DrawableRes imageId: Int,
@@ -31,6 +44,9 @@ class ImageBitmapStructure(
     name: String = structureType.toString()
 ) : Structure(structureType, imageId, name) {
 
+    /**
+     * Copy constructor
+     */
     constructor(structure: Structure, imageBitmap: Bitmap) : this(
         structureType = structure.structureType,
         imageId = structure.imageId,

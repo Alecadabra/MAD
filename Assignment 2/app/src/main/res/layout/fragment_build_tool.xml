@@ -6,26 +6,16 @@
     android:layout_height="wrap_content"
     tools:context=".view.fragment.tool.BuildToolFragment">
 
-    <TextView
-        android:id="@+id/buildToolTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/buildToolRecyclerView"
         android:name="com.alec.mad.assignment2.view.fragment.StructureSelectorFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingVertical="8dp"
+        android:layout_marginHorizontal="@dimen/mapScreenMargin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buildToolTitle"
         tools:listitem="@layout/fragment_build_tool_element" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

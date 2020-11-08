@@ -5,6 +5,9 @@ import com.alec.mad.assignment2.model.ImageIDStructure
 import com.alec.mad.assignment2.model.Structure
 import com.alec.mad.assignment2.model.StructureType.*
 
+/**
+ * Wrapper singleton of a list of [Structure]s that are available to build.
+ */
 object StructureData : List<Structure> by structures
 
 private val structures = listOf(

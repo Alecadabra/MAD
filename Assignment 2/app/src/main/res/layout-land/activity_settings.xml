@@ -8,7 +8,7 @@
     tools:ignore="HardcodedText" >
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:adjustViewBounds="true"
@@ -24,6 +24,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+
         <GridLayout
             android:id="@+id/settingsActivityGridLayout"
             style="@style/Widget.AppCompat.Button.Small"
@@ -31,10 +32,10 @@
             android:layout_height="wrap_content"
             android:backgroundTint="#ffffff"
             android:clickable="false"
-            android:columnCount="2"
+            android:columnCount="14"
             android:orientation="vertical"
             android:padding="@dimen/menuPadding"
-            android:rowCount="12"
+            android:rowCount="4"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -57,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginHorizontal="@dimen/mapScreenMargin"
-                android:layout_marginBottom="@dimen/mapScreenMargin"
+                android:layout_marginBottom="@dimen/menuPadding"
                 android:autofillHints="Set Island Name"
                 android:gravity="center"
                 android:hint="Island Name"
@@ -82,7 +83,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginHorizontal="@dimen/mapScreenMargin"
-                android:layout_marginBottom="@dimen/mapScreenMargin"
+                android:layout_marginBottom="@dimen/menuPadding"
                 android:autofillHints="Set Map Width"
                 android:gravity="center"
                 android:hint="Map Width"
@@ -108,7 +109,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginHorizontal="@dimen/mapScreenMargin"
-                android:layout_marginBottom="@dimen/mapScreenMargin"
+                android:layout_marginBottom="@dimen/menuPadding"
                 android:autofillHints="Set Map Height"
                 android:gravity="center"
                 android:hint="Map Height"
@@ -134,7 +135,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginHorizontal="@dimen/mapScreenMargin"
-                android:layout_marginBottom="@dimen/mapScreenMargin"
+                android:layout_marginBottom="@dimen/menuPadding"
                 android:autofillHints="Set Initial Money"
                 android:gravity="center"
                 android:hint="Initial Money"
@@ -159,7 +160,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginHorizontal="@dimen/mapScreenMargin"
-                android:layout_marginBottom="@dimen/mapScreenMargin"
+                android:layout_marginBottom="@dimen/menuPadding"
                 android:gravity="center"
                 android:textSize="18sp" />
 
@@ -182,9 +183,13 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginHorizontal="@dimen/mapScreenMargin"
-                android:layout_marginBottom="@dimen/mapScreenMargin"
+                android:layout_marginBottom="@dimen/menuPadding"
                 android:gravity="center"
                 android:textSize="18sp" />
+
+
+            <!-- ======================================================================== -->
+
 
             <!-- ======================================================================== -->
 
@@ -205,7 +210,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginHorizontal="@dimen/mapScreenMargin"
-                android:layout_marginBottom="@dimen/mapScreenMargin"
+                android:layout_marginBottom="@dimen/menuPadding"
                 android:gravity="center"
                 android:textSize="18sp" />
 
@@ -228,7 +233,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginHorizontal="@dimen/mapScreenMargin"
-                android:layout_marginBottom="@dimen/mapScreenMargin"
+                android:layout_marginBottom="@dimen/menuPadding"
                 android:gravity="center"
                 android:textSize="18sp" />
 
@@ -251,7 +256,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginHorizontal="@dimen/mapScreenMargin"
-                android:layout_marginBottom="@dimen/mapScreenMargin"
+                android:layout_marginBottom="@dimen/menuPadding"
                 android:gravity="center"
                 android:textSize="18sp" />
 
@@ -274,7 +279,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginHorizontal="@dimen/mapScreenMargin"
-                android:layout_marginBottom="@dimen/mapScreenMargin"
+                android:layout_marginBottom="@dimen/menuPadding"
                 android:gravity="center"
                 android:textSize="18sp" />
 
@@ -297,7 +302,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginHorizontal="@dimen/mapScreenMargin"
-                android:layout_marginBottom="@dimen/mapScreenMargin"
+                android:layout_marginBottom="@dimen/menuPadding"
                 android:gravity="center"
                 android:textSize="18sp" />
 
@@ -320,7 +325,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginHorizontal="@dimen/mapScreenMargin"
-                android:layout_marginBottom="@dimen/mapScreenMargin"
+                android:layout_marginBottom="@dimen/menuPadding"
                 android:gravity="center"
                 android:textSize="18sp" />
 
@@ -344,7 +349,7 @@
             app:layout_constraintStart_toEndOf="@+id/settingsActivityBackButton"
             app:layout_constraintTop_toBottomOf="@+id/settingsActivityGridLayout" />
 
-
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

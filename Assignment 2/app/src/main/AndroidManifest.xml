@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.alec.mad.assignment2">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -12,7 +14,7 @@
         <activity android:name=".view.activity.SettingsActivity"></activity>
         <activity android:name=".view.activity.DetailsActivity" />
         <activity
-            android:name=".view.activity.MapActivity"
+            android:name=".view.activity.GameActivity"
             android:screenOrientation="sensor" />
         <activity
             android:name=".view.activity.TitleActivity"
