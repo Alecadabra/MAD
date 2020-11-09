@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>P7 - Calculator Web App</title>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script src="script.js"></script>
+    </head>
+    <body>
+        <form>
+            <p>
+                Operand 1:
+                <input class="operandInput" id="operand1Input" type="number"/>
+            </p>
+            <p>
+                Operand 2:
+                <input class="operandInput" id="operand2Input" type="number"/>
+            </p>
+            <p>
+                <input id="plusBtn" type="button" value="+"/>
+                <input id="minusBtn" type="button" value="-"/>
+                <input id="multBtn" type="button" value="*"/>
+                <input id="divBtn" type="button" value="/"/>
+            </p>
+            <p>
+                Result:
+                <input id="resultInput" type="number" readonly/>
+            </p>
+        </form>
+    </body>
+</html>

@@ -1,0 +1,20 @@
+form {
+    border: 2px solid blue;
+    padding: 5px 10px;
+    background: #c0c0ff;
+    font-family: "Georgia", serif;
+}
+
+input {
+    padding: 5px 10px;
+}
+
+.operandInput {
+    border: 2px solid orange;
+    background: #ffe0c0;
+}
+
+#resultInput {
+    border: 2px solid green;
+    background: #c0ffc0;
+}
