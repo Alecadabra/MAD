@@ -20,7 +20,8 @@ fragments and data passing.
 
 ## [Assignment 2](Assignment%202)
 
-<!-- TODO -->
+A small city simulator game. Demonstrates understanding of persistent data,
+app interaction and remote data.
 
 ## [Practical Excercises](Practical%20Excercises)
 
