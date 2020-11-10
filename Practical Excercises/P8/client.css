@@ -1,0 +1,27 @@
+body {
+    background: black;
+    color: white;
+    margin: 0px;
+}
+
+h1 {
+    font-family: sans-serif;
+    margin: 0px 0px 8px 0px;
+    padding: 8px;
+    background: #404040;
+}
+
+form {
+    margin: 8px;
+}
+
+#displayarea {
+    border: 1px solid #80ff80;
+    padding: 8px;
+    margin: 8px;
+    left: 0px;
+    right: 0px;
+    background: #404040;
+    font-family: monospace;
+    white-space: pre;
+}

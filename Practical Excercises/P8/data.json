@@ -1,0 +1,19 @@
+{
+    "factions": [
+        { 
+            "name": "Covenant", 
+            "strength": 100, 
+            "relationship": "enemy" 
+        },
+        {
+            "name": "Sirius Cybernetics Corporation, Complaints Division", 
+            "strength": 50, 
+            "relationship": "neutral" 
+        },
+        { 
+            "name": "Twelve Colonies", 
+            "strength": 25, 
+            "relationship": "ally" 
+        }
+    ]
+}
