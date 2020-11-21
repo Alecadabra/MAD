@@ -1,61 +1,71 @@
 package com.alec.mad.q2_c
 
+import android.annotation.SuppressLint
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.alec.mad.q2_c.dummy.DummyContent
+import android.widget.TextView
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
-/**
- * A fragment representing a list of Items.
- */
-class ItemFragment : Fragment() {
-
-    private var columnCount = 1
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        arguments?.let {
-            columnCount = it.getInt(ARG_COLUMN_COUNT)
-        }
-    }
+class MyListFragment : Fragment() {
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_item_list, container, false)
+        val view = inflater.inflate(
+                R.layout.fragment_item_list,
+                container,
+                false
+        ) as? RecyclerView ?: error("View not recycler view")
 
-        // Set the adapter
-        if (view is RecyclerView) {
-            with(view) {
-                layoutManager = when {
-                    columnCount <= 1 -> LinearLayoutManager(context)
-                    else -> GridLayoutManager(context, columnCount)
-                }
-                adapter = MyItemRecyclerViewAdapter(DummyContent.ITEMS)
-            }
-        }
+        // Set RV params
+        view.layoutManager = LinearLayoutManager(
+                context,
+                LinearLayoutManager.VERTICAL,
+                false
+        )
+        view.adapter = MyListAdapter()
+
         return view
     }
 
-    companion object {
+    class MyListAdapter
+        : RecyclerView.Adapter<MyListAdapter.MyListViewHolder>() {
 
-        // TODO: Customize parameter argument names
-        const val ARG_COLUMN_COUNT = "column-count"
+        override fun onCreateViewHolder(
+                parent: ViewGroup,
+                viewType: Int
+        ): MyListViewHolder {
+            val view = LayoutInflater.from(parent.context).inflate(
+                    R.layout.fragment_item, parent, false
+            )
+            return MyListViewHolder(view)
+        }
 
-        // TODO: Customize parameter initialization
-        @JvmStatic
-        fun newInstance(columnCount: Int) =
-            ItemFragment().apply {
-                arguments = Bundle().apply {
-                    putInt(ARG_COLUMN_COUNT, columnCount)
-                }
-            }
+        override fun onBindViewHolder(
+                holder: MyListViewHolder,
+                position: Int
+        ) {
+            // Set text in the view holder
+            @SuppressLint("SetTextI18n")
+            val text = "Button ${position + 1}"
+            holder.textView.text = text
+            holder.textView.setOnClickListener { Log.i("Button", text) }
+        }
+
+        // Show 100 items
+        override fun getItemCount(): Int = 100
+
+        inner class MyListViewHolder(
+                view: View
+        ) : RecyclerView.ViewHolder(view) {
+            // Text field
+            val textView: TextView = view.findViewById(R.id.textView)
+        }
     }
 }
