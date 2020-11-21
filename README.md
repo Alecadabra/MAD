@@ -15,13 +15,13 @@ Syllabus:
 
 ## [Assignment 1](Assignment%201)
 
-A simple quiz app on flags. Demonstrates understanding of RecyclerView,
+A simple quiz android app on flags. Demonstrates understanding of RecyclerView,
 fragments and data passing.
 
 ## [Assignment 2](Assignment%202)
 
-A small city simulator game. Demonstrates understanding of persistent data,
-app interaction and remote data.
+A small android app city simulator game. Demonstrates understanding of persistent
+data, app interaction and remote data.
 
 ## [Practical Excercises](Practical%20Excercises)
 
@@ -31,4 +31,6 @@ don't make a lot of sense without context.
 
 ## [Take Home Exam](Take%20Home%20Exam)
 
-<!-- TODO -->
+Week-long test/assignment that replaced a standard final exam because of COVID.
+Question booklet also not provided so the answers don't make a lot of sense without
+context.

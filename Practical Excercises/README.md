@@ -27,3 +27,8 @@ An android app demonstration of downloading and parsing JSON from a demo server.
 ## P7 - Web Development
 
 A simple calculator website.
+
+## P8 - Web Development 2
+
+Demonstration of JS `fetch` and introduction to TypeScript. Files here are not
+my creation and are just adapted from other sources.
