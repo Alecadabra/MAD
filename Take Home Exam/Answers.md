@@ -8,16 +8,34 @@ Explicit intents specify an exact application, eg. an `Activity` class that will
 satisfy the intent, such as when you are starting your own Activity from
 withing your app.
 
+Eg. (Kotlin)
+
+```kotlin
+val intent = Intent(context, MyOtherActivity.javaClass)
+startActivity(intent)
+```
+
 Implicit intents specify a general action for some component of an app on the
 device to fulfill, such as when you want to show some sort of information
 to the user and use `Intent.ACTION_VIEW`.
 
+Eg. (Kotlin)
+
+```kotlin
+val lat = ...
+val long = ...
+val intent = Intent(Intent.ACTION_VIEW)
+intent.data = Uri.parse("geo:$lat,$long")
+startActivity(intent)
+```
+
 ### (b)
 
  * Activity B has a `getIntent()` static function that takes in the `Student`
- object and places it in an explicit intent that it returns, and Activity A
- starts the activity with this Intent. When Activity B is created, it can
- retrieve the student object from the intent.
+ object (and the context of the calling activity) and places it in an explicit
+ intent that it returns, and Activity A starts the activity with this Intent.
+ When Activity B is created, it can  retrieve the student object from the
+ intent.
 
  * Activity A places the `Student` object in a singleton and starts Activity
  B as normal. When Activity B is created it can get the object from the
@@ -31,41 +49,55 @@ to the user and use `Intent.ACTION_VIEW`.
  the resources of the background activity.
 
 To save the `Club` class, provide a `Parcelable` implementation in both the
-`Student` and `Club` class. The `Student` class can save it's `id` and
-`name` fields trivially. The `Club` class can save the `name` field trivially
-and save the `members` field as a array list of parcelables.
+`Student` and `Club` classes. The `Student` class can save it's `id` and
+`name` fields into the parcel trivially. The `Club` class can save the `name`
+field into the parcel trivially and save the `members` field in the parcel as an
+array list of parcelables.
 
 ### (d)
 
 In a Fragment, `findViewById()` is called on the reference to the view, whereas
 in an Activity, it is called on the Activity reference (`this`).
 
+Eg. (Kotlin)
+
+```kotlin
+// In an Activity
+findViewById(R.id.etc)
+
+// In a fragment
+view.findViewById(R.id.etc)
+```
+
 ### (e)
 
-A view that contains other children Views, for exaple in a RecyclerView,
+A view that contains other children Views, for example in a RecyclerView,
 each view holder has a `ViewGroup` with all of the views for that view holder.
 
 ## Question 2
 
 ### (a)
 
-`onCreate()` is called at the start of the lifecycle when the Activity is 
-launched and it's views exist and references to those views can be retrieved.
+`onCreate()` is called at the start of the lifecycle when the Activity or
+Fragment is created. This is where the state should be initialised.
 
-`onPause()` is called when another activity is started over the top of the
-current activity and the current one is paused.
+`onPause()` is called when the user is leaving the current activity or fragment
+and the current one is paused. The activity or fragment may or may not
+be resumed later.
 
-`onSaveInstance()` is called when an activity begins to stop, so the activity
+`onSaveInstance()` is called when an activity or fragment begins to stop, so it
 can save it's state to a bundle that can be retrieved in `onCreate()`.
 
-`onStop()` is called when the activity enters the 'Stopped' state and is no
-longer visible to the user. If this function is called, it will always be after
-`onPause()`.
+`onStop()` is called when the activity or fragment enters the 'Stopped' state
+and is no longer visible to the user. If this function is called, it will
+always be after `onPause()`.
 
-`onDestroy()` is called when the activity is about to be destroyed, if this
-is called, it will always be after `onStop()`.
+`onDestroy()` is called when the activity or fragment is about to be destroyed,
+if this is called, it will always be after `onStop()`.
 
 ### (b)
+
+See below or `Q2_b.xml`.
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -107,31 +139,37 @@ is called, it will always be after `onStop()`.
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toEndOf="@id/space"/>
 
+    <!-- Using 0dp means that the layout height is essentially ignored and the
+        height is determined by the constraints. -->
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 ```
 
 ### (c)
 
-This is Kotlin BTW.
+See below or `Q2_c.kt`.
+
+(Kotlin)
 
 ```kotlin
 class MyListFragment : Fragment() {
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(
-                R.layout.fragment_item_list,
-                container,
-                false
+            R.layout.fragment_item_list,
+            container,
+            false
         ) as? RecyclerView ?: error("View not recycler view")
 
         // Set RV params
         view.layoutManager = LinearLayoutManager(
-                context,
-                LinearLayoutManager.VERTICAL,
-                false
+            context,
+            LinearLayoutManager.VERTICAL,
+            false
         )
         view.adapter = MyListAdapter()
 
@@ -142,18 +180,19 @@ class MyListFragment : Fragment() {
         : RecyclerView.Adapter<MyListAdapter.MyListViewHolder>() {
 
         override fun onCreateViewHolder(
-                parent: ViewGroup,
-                viewType: Int
+            parent: ViewGroup,
+            viewType: Int
         ): MyListViewHolder {
+            // Create the view and view holder from it
             val view = LayoutInflater.from(parent.context).inflate(
-                    R.layout.fragment_item, parent, false
+                R.layout.fragment_item, parent, false
             )
             return MyListViewHolder(view)
         }
 
         override fun onBindViewHolder(
-                holder: MyListViewHolder,
-                position: Int
+            holder: MyListViewHolder,
+            position: Int
         ) {
             // Set text in the view holder
             @SuppressLint("SetTextI18n")
@@ -166,7 +205,7 @@ class MyListFragment : Fragment() {
         override fun getItemCount(): Int = 100
 
         inner class MyListViewHolder(
-                view: View
+            view: View
         ) : RecyclerView.ViewHolder(view) {
             // Text field
             val textView: TextView = view.findViewById(R.id.textView)
@@ -184,6 +223,10 @@ class MyListFragment : Fragment() {
 ## Question 3
 
 ### (a)
+
+See below or `Q3_a.kt`.
+
+(Kotlin)
 
 #### i)
 
@@ -238,7 +281,7 @@ private fun getEmail(intent: Intent?): String {
         return@let nullableId
     } ?: error("Query failed")
 
-    // Return email
+    // Return email or "None"
     return contentResolver?.let { contentResolver ->
         var nullableEmail: String? = null
 
@@ -263,6 +306,10 @@ private fun getEmail(intent: Intent?): String {
 
 ### (b)
 
+See below or `Q3_b.kt`.
+
+(Kotlin)
+
 #### i)
 
 ```kotlin
@@ -285,7 +332,7 @@ fun createTable(db: SQLiteDatabase) {
 ```kotlin
 fun insert(info: GameScoreInfo) {
     val cols = GameScoreInfoSchema.GameScoreInfoTable.Cols
-    writableDatabase.insert(
+    this.writableDatabase.insert(
         GameScoreInfoSchema.GameScoreInfoTable.NAME,
         null,
         ContentValues().also { cv ->
@@ -300,10 +347,16 @@ fun insert(info: GameScoreInfo) {
 ### iii)
 
 ```kotlin
+// Essentially the kotlin Pair class, just holds a score and a name in an
+// easily accessible way.
 data class ScoreAndName(val score: Int, val name: String)
 
+// Returns a collection of the ScoreAndName data class.
 fun getScoresAndNames(): Collection<ScoreAndName> {
+
     val cols = GameScoreInfoSchema.GameScoreInfoTable.Cols
+
+    // Cursor class
     class GameScoreInfoCursor(cursor: Cursor) : CursorWrapper(cursor) {
         val scoreAndName: ScoreAndName
             get() = ScoreAndName(
@@ -311,10 +364,11 @@ fun getScoresAndNames(): Collection<ScoreAndName> {
                 name = getString(getColumnIndex(cols.NAME))
             )
     }
+
     val scoreAndNames = mutableSetOf<ScoreAndName>()
 
     GameScoreInfoCursor(
-        writableDatabase.query(
+        this.writableDatabase.query(
             GameScoreInfoSchema.GameScoreInfoTable.NAME,
             null, null, null, null, null, null
         )
@@ -348,6 +402,10 @@ I made a simple singleton with a download function that sets a field.
 
 I assumed there is no certificate stuff to handle.
 
+See below or `Q4_a.kt`.
+
+(Kotlin)
+
 ```kotlin
 object Downloader {
     
@@ -355,6 +413,7 @@ object Downloader {
 
     // Sets the above time field
     fun downloadTime() {
+        // Run in an IO thread
         CoroutineScope(Dispatchers.IO).launch {
             val connection = try {
                 // Open and connect to URL
@@ -400,6 +459,10 @@ have the data displayed.
 
 ### (c)
 
+See below or `Q4_c.kt`.
+
+(Kotlin)
+
 ```kotlin
 try {
     val jBase = JSONObject(jsonText)
@@ -412,7 +475,6 @@ try {
     val jPost = jPostsList.getJSONObject(0)
     val postId = jPost.getString("post_id")
 
-    val jMainObject.getDouble("temp")
 } catch (jsonE: JSONException) {
     // Handle exception
 }
@@ -425,16 +487,18 @@ try {
 Advantage: A web app can run on basically any device with internet access.
 
 Disadvantage: Web apps must be written in JavaScript and account for the
-lowest common denoinator web browsers.
+lowest common denominator web browsers.
 
 ### (b)
 
 TypeScript is a superset language of JavaScript that adds optional typing to
 variables among other things and transpiles to an old version of JavaScript.
 
- * It allows the compiler to check for type mismatch errors.
+ * It allows the compiler to check for type mismatch errors. So has increased
+ Defence in Depth :).
 
- * It transpiles to a version of JS that will work on old browsers.
+ * It transpiles to a version of JS that will work on old browsers. So has
+ better compatability than modern JS.
 
 ### (c)
 
@@ -445,3 +509,63 @@ server.
 
 ### (d)
 
+See below or `Q5_d.js`.
+
+(JavaScript)
+
+```js
+$(window).on(
+    "load",
+    () => {
+        $("#theButton").on(
+            "click",
+            () => {
+                let number = parseFloat($("#theNumberField").val())
+
+                if (isNaN(number)) {
+                    alert("You must enter a number")
+                } else {
+                    $("#theParagraph").text(`${number * 10}`)
+                }
+            }
+        )
+    }
+)
+```
+
+### (e)
+
+See below or `Q5_e.js`.
+
+(JavaScript)
+
+```js
+$(window).on(
+    "load",
+    () => {
+        $("#theButton").on(
+            "click",
+            () => {
+                fetch(
+                    "/data",
+                    { method: "GET" }
+                ).then(
+                    response => {
+                        if (response.ok) {
+                            return response.text();
+                        } else {
+                            throw new Error(response.statusText);
+                        }
+                    }
+                ).then(
+                    data => {
+                        $("#theNumberField").text(data);
+                    }
+                ).catch(
+                    err => alert(err)
+                );
+            }
+        );
+    }
+);
+```
