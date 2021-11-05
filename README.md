@@ -1,24 +1,27 @@
-# Mobile Application Development (Curtin University 2020)
+# Mobile Application Development
 
-Part of my Computer Science degree at Curtin University. My final mark was 96%.
+Part of my Computer Science degree at Curtin University in 2020. My final mark was 96%.
 
 <table>
   <thead>
     <tr>
-      <th colspan="2">2019 • 1st Year</th>
-      <th colspan="2">2020 • 2nd Year</th>
-      <th colspan="2">2021 • 3rd Year</th>
-    </tr>
-    <tr>
-      <th>Sem 1</th>
-      <th>Sem 2</th>
-      <th>Sem 1</th>
-      <th>Sem 2</th>
-      <th>Sem 1</th>
-      <th>Sem 2</th>
+      <th colspan="6">Curtin University • BSc Computer Science</th>
     </tr>
   </thead>
   <tbody>
+    <tr>
+      <td colspan="2">2019 • 1st Year</td>
+      <td colspan="2">2020 • 2nd Year</td>
+      <td colspan="2">2021 • 3rd Year</td>
+    </tr>
+    <tr>
+      <td>Sem 1</td>
+      <td>Sem 2</td>
+      <td>Sem 1</td>
+      <td>Sem 2</td>
+      <td>Sem 1</td>
+      <td>Sem 2</td>
+    </tr>
     <tr>
       <td rowspan="3">
         <a href="https://github.com/Alecadabra/OOPD" target="_blank" rel="noopener noreferrer">
@@ -42,7 +45,7 @@ Part of my Computer Science degree at Curtin University. My final mark was 96%.
         <a href="https://github.com/Alecadabra/CG" target="_blank" rel="noopener noreferrer">
           <abbr title="Computer Graphics">CG</abbr></a></a>
         <br>
-          <abbr title="Mobile Application Development"><b>MAD</b></abbr>
+          <abbr title="Mobile Application Development"><b>MAD</b></abbr></a></a>
         <br>
         <a href="https://github.com/Alecadabra/PL" target="_blank" rel="noopener noreferrer">
           <abbr title="Programming Languages">PL</abbr></a></a>
